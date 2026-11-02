@@ -1,0 +1,19 @@
+{
+  "NotFound": {
+    "title": "Page Not Found",
+    "message": "The page you are looking for does not exist, has been moved, or is temporarily unavailable.",
+    "goHome": "Go to Home",
+    "browseProducts": "Browse Products",
+    "popularCollections": "Popular Collections"
+  },
+  "Footer": {
+    "description": "Candies to sweeten your day and share with the people you love most.",
+    "shop": "Shop",
+    "customer": "Customer",
+    "shopAll": "Shop All",
+    "orders": "Orders",
+    "account": "Account",
+    "contact": "Contact",
+    "copyright": "Dulcería Alegría. All rights reserved."
+  }
+}

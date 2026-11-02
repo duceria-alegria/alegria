@@ -1,0 +1,55 @@
+{
+  "Product": {
+    "inStock": "Disponible",
+    "outOfStock": "Agotado",
+    "addToCart": "Agregar al carrito",
+    "addedToCart": "Agregado",
+    "adding": "Agregando...",
+    "selectOptions": "Elige opciones",
+    "addedToCartMessage": "Agregado al carrito",
+    "addedToCartDescription": "{name} se agregó a tu carrito",
+    "errorTitle": "Error",
+    "errorAddToCart": "No se pudo agregar el artículo al carrito",
+    "removeFromCart": "Quitar",
+    "removedFromCartMessage": "Quitado del carrito",
+    "removedFromCartDescription": "{name} se quitó de tu carrito",
+    "errorUpdateCart": "No se pudo actualizar el carrito",
+    "increaseQuantity": "Agregar una unidad",
+    "decreaseQuantity": "Quitar una unidad",
+    "inCart": "{count} en el carrito",
+    "sku": "SKU: {sku}",
+    "from": "Desde",
+    "noImage": "Sin imagen",
+    "featuredProducts": "Productos destacados",
+    "relatedProducts": "Productos relacionados",
+    "viewAllProducts": "Ver todos los productos",
+    "notFound": "Producto no encontrado",
+    "home": "Inicio",
+    "noProductsFound": "No se encontraron productos",
+    "shopProductAt": "Compra {name} en {siteName}",
+    "productCount": "{count, plural, one {# producto} other {# productos}}",
+    "trustBadges": {
+      "fastShipping": "Envío rápido",
+      "secureCheckout": "Pago seguro"
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "shipping": {
+        "question": "¿Qué opciones de envío ofrecen?",
+        "answer": "Ofrecemos envío estándar (5 a 7 días hábiles), envío exprés (2 a 3 días hábiles) y entrega al día siguiente en zonas seleccionadas. El envío estándar es gratis en pedidos mayores a $50."
+      },
+      "returns": {
+        "question": "¿Cuál es su política de devoluciones?",
+        "answer": "Aceptamos devoluciones dentro de los 30 días posteriores a la compra. Los artículos deben estar sin usar y en su empaque original. Solo contacta a nuestro equipo de soporte para iniciar la devolución y recibir una guía de envío prepagada."
+      },
+      "tracking": {
+        "question": "¿Cómo puedo rastrear mi pedido?",
+        "answer": "Cuando tu pedido salga, recibirás un correo con el número de rastreo. También puedes consultar el estado de tu pedido en cualquier momento iniciando sesión en tu cuenta y visitando el historial de pedidos."
+      },
+      "international": {
+        "question": "¿Hacen envíos internacionales?",
+        "answer": "¡Sí! Enviamos a más de 50 países. Las tarifas y los tiempos de entrega internacionales varían según el destino. Verás el costo exacto al pagar, antes de completar tu compra."
+      }
+    }
+  }
+}

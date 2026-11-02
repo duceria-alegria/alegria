@@ -1,0 +1,19 @@
+{
+  "name": "alegria",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n server,storefront -c blue,magenta \"pnpm --filter server dev\" \"pnpm --filter storefront dev\"",
+    "dev:server": "pnpm --filter server dev",
+    "dev:storefront": "pnpm --filter storefront dev",
+    "build": "pnpm --filter server build && pnpm --filter storefront build",
+    "build:server": "pnpm --filter server build",
+    "build:storefront": "pnpm --filter storefront build",
+    "start": "concurrently -n server,storefront -c blue,magenta \"pnpm --filter server start\" \"pnpm --filter storefront start\"",
+    "start:server": "pnpm --filter server start",
+    "start:storefront": "pnpm --filter storefront start"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}

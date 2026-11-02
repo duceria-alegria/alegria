@@ -1,0 +1,28 @@
+{
+  "Navigation": {
+    "openMenu": "Menü öffnen",
+    "menu": "Menü",
+    "mainNav": "Hauptnavigation",
+    "home": "Start",
+    "shop": "Shop",
+    "categories": "Kategorien",
+    "buildBox": "Box zusammenstellen",
+    "contact": "Kontakt",
+    "openSearch": "Suchen",
+    "closeSearch": "Suche schließen",
+    "searchProducts": "Süßigkeiten suchen...",
+    "shopAll": "Alle Produkte",
+    "collections": "Kategorien",
+    "account": "Konto",
+    "profile": "Profil",
+    "orders": "Bestellungen",
+    "addresses": "Adressen",
+    "signIn": "Anmelden",
+    "signOut": "Abmelden",
+    "greeting": "Hallo, {name}",
+    "cart": "Warenkorb",
+    "shoppingCart": "Warenkorb",
+    "switchLanguage": "Sprache wechseln",
+    "switchCurrency": "Währung wechseln"
+  }
+}

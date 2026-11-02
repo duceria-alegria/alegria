@@ -1,0 +1,96 @@
+# Stack de producción del backend Vendure: PostgreSQL + server + worker.
+#
+#   cp .env.prod.example .env.prod      # y rellena los valores
+#   docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
+#
+# (El docker-compose.yml de apps/server es solo para desarrollo local.)
+#
+# Con GitHub Actions (.github/workflows/deploy-server.yml) no se compila en el servidor: el workflow
+# publica la imagen en GHCR y aquí solo se hace pull con SERVER_IMAGE e IMAGE_TAG
+# (`up -d --no-build`). Sin esas variables, `up --build` compila localmente como antes.
+#
+# No incluye proxy inverso ni TLS: pon delante el que uses (Caddy, Traefik, nginx...)
+# apuntando al puerto publicado del server. El server asume 1 proxy (trustProxy: 1).
+
+name: alegria-prod
+
+x-server-build: &server-build
+    # Mismo image para server y worker; el contexto es la raíz del monorepo.
+    context: .
+    dockerfile: apps/server/Dockerfile
+
+x-server-env: &server-env
+    NODE_ENV: production
+    APP_ENV: production
+    PORT: 3000
+    COOKIE_SECRET: ${COOKIE_SECRET:?Define COOKIE_SECRET en .env.prod}
+    SUPERADMIN_USERNAME: ${SUPERADMIN_USERNAME:-superadmin}
+    # Vendure se niega a arrancar en producción si la contraseña es "superadmin".
+    SUPERADMIN_PASSWORD: ${SUPERADMIN_PASSWORD:?Define SUPERADMIN_PASSWORD en .env.prod}
+    PUBLIC_URL: ${PUBLIC_URL:?Define PUBLIC_URL en .env.prod}
+    STOREFRONT_URL: ${STOREFRONT_URL:?Define STOREFRONT_URL en .env.prod}
+    CORS_ORIGINS: ${CORS_ORIGINS:-}
+    RESEND_API_KEY: ${RESEND_API_KEY:-}
+    EMAIL_FROM_ADDRESS: ${EMAIL_FROM_ADDRESS:-}
+    DB_HOST: postgres
+    DB_PORT: 5432
+    DB_NAME: ${DB_NAME:-vendure}
+    DB_USERNAME: ${DB_USERNAME:-vendure}
+    DB_PASSWORD: ${DB_PASSWORD:?Define DB_PASSWORD en .env.prod}
+    DB_SCHEMA: public
+
+services:
+    postgres:
+        image: postgres:16-alpine
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: ${DB_NAME:-vendure}
+            POSTGRES_USER: ${DB_USERNAME:-vendure}
+            POSTGRES_PASSWORD: ${DB_PASSWORD:?Define DB_PASSWORD en .env.prod}
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+            interval: 5s
+            timeout: 5s
+            retries: 10
+        # Sin `ports`: la base solo es accesible desde la red interna de compose.
+
+    server:
+        build: *server-build
+        image: ${SERVER_IMAGE:-alegria-server}:${IMAGE_TAG:-latest}
+        restart: unless-stopped
+        depends_on:
+            postgres:
+                condition: service_healthy
+        environment: *server-env
+        ports:
+            # Por defecto solo en loopback, para que lo atienda tu proxy inverso.
+            # Pon SERVER_BIND=0.0.0.0 si quieres exponerlo directamente.
+            - '${SERVER_BIND:-127.0.0.1}:${SERVER_PORT:-3001}:3000'
+        volumes:
+            - assets_data:/app/apps/server/static/assets
+        # El HEALTHCHECK viene del Dockerfile (GET /health).
+        # Al arrancar, el server corre las migraciones pendientes antes de abrir el puerto.
+
+    worker:
+        build: *server-build
+        image: ${SERVER_IMAGE:-alegria-server}:${IMAGE_TAG:-latest}
+        command: ['node', 'dist/index-worker.js']
+        restart: unless-stopped
+        # Espera a que el server esté sano = migraciones aplicadas.
+        depends_on:
+            server:
+                condition: service_healthy
+        environment: *server-env
+        volumes:
+            - assets_data:/app/apps/server/static/assets
+        # El worker no sirve HTTP; desactiva el healthcheck heredado del Dockerfile.
+        healthcheck:
+            disable: true
+
+volumes:
+    # Datos de la base de datos. ¡Respáldalos!
+    postgres_data:
+    # Imágenes subidas desde el Dashboard (server y worker comparten el volumen).
+    assets_data:

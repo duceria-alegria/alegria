@@ -1,0 +1,76 @@
+/* Expanding search pill: the trigger morphs into a panel that reveals from the right edge. */
+.search-trigger {
+  transition: visibility 0s linear 0.5s;
+}
+.search-open .search-trigger {
+  visibility: hidden;
+  transition: visibility 0s linear 0.3s;
+}
+
+.search-wrap {
+  width: min(420px, calc(100vw - 2 * clamp(20px, 4vw, 40px)));
+  filter: drop-shadow(0 10px 12px rgb(75 29 110 / 0.16));
+  visibility: hidden;
+  pointer-events: none;
+  transition: visibility 0s linear 0.65s;
+}
+.search-open .search-wrap {
+  visibility: visible;
+  pointer-events: auto;
+  transition: visibility 0s;
+}
+
+.search-panel {
+  box-shadow: inset 0 0 0 1.5px var(--primary);
+  clip-path: inset(0 0 0 calc(100% - 44px) round 999px);
+  opacity: 0;
+  transition: clip-path 0.45s cubic-bezier(0.65, 0, 0.35, 1) 0.05s, opacity 0.25s ease 0.25s;
+}
+.search-open .search-panel {
+  clip-path: inset(0 0 0 0 round 999px);
+  opacity: 1;
+  transition: clip-path 0.7s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+}
+.search-panel:focus-within {
+  box-shadow: inset 0 0 0 2px var(--primary);
+}
+.search-panel input[type="search"]::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.search-icon,
+.search-panel input,
+.search-close {
+  opacity: 0;
+  transform: translateX(20px);
+  transition: opacity 0.15s ease, transform 0.3s ease;
+}
+.search-close {
+  transform: translateX(20px) rotate(-90deg) scale(0.5);
+}
+.search-open .search-icon {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.3s ease 0.1s, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s;
+}
+.search-open .search-panel input {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.3s ease 0.17s, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.17s;
+}
+.search-open .search-close {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.3s ease 0.24s, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.24s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-trigger,
+  .search-wrap,
+  .search-panel,
+  .search-icon,
+  .search-panel input,
+  .search-close {
+    transition: none !important;
+  }
+}

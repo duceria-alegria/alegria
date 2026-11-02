@@ -1,0 +1,19 @@
+{
+  "NotFound": {
+    "title": "Seite nicht gefunden",
+    "message": "Die gesuchte Seite existiert nicht, wurde verschoben oder ist vorübergehend nicht verfügbar.",
+    "goHome": "Zur Startseite",
+    "browseProducts": "Produkte durchsuchen",
+    "popularCollections": "Beliebte Kategorien"
+  },
+  "Footer": {
+    "description": "Süßigkeiten, die deinen Tag versüßen und die du mit deinen Liebsten teilen kannst.",
+    "shop": "Shop",
+    "customer": "Kunde",
+    "shopAll": "Alle Produkte",
+    "orders": "Bestellungen",
+    "account": "Konto",
+    "contact": "Kontakt",
+    "copyright": "Dulcería Alegría. Alle Rechte vorbehalten."
+  }
+}

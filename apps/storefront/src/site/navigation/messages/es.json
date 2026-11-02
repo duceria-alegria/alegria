@@ -1,0 +1,28 @@
+{
+  "Navigation": {
+    "openMenu": "Abrir menú",
+    "menu": "Menú",
+    "mainNav": "Principal",
+    "home": "Inicio",
+    "shop": "Tienda",
+    "categories": "Categorías",
+    "buildBox": "Arma tu caja",
+    "contact": "Contacto",
+    "openSearch": "Buscar",
+    "closeSearch": "Cerrar búsqueda",
+    "searchProducts": "Buscar dulces…",
+    "shopAll": "Ver todo",
+    "collections": "Colecciones",
+    "account": "Cuenta",
+    "profile": "Perfil",
+    "orders": "Pedidos",
+    "addresses": "Direcciones",
+    "signIn": "Iniciar sesión",
+    "signOut": "Cerrar sesión",
+    "greeting": "Hola, {name}",
+    "cart": "Carrito",
+    "shoppingCart": "Carrito de compras",
+    "switchLanguage": "Cambiar idioma",
+    "switchCurrency": "Cambiar moneda"
+  }
+}

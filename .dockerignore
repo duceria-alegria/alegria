@@ -1,0 +1,19 @@
+# Contexto de build = raíz del monorepo (ver apps/server/Dockerfile).
+
+# Los .env tienen valores de desarrollo y secretos: en producción se pasan en tiempo de ejecución.
+**/.env
+**/.env.*
+**/node_modules
+**/dist
+**/.git
+**/*.log
+**/*.tsbuildinfo
+**/.tgrep
+**/.claude
+
+# Datos locales: imágenes subidas en desarrollo y correos escritos por el EmailPlugin.
+apps/server/static/assets
+apps/server/static/email/test-emails
+
+# Esta imagen es solo del backend.
+apps/storefront

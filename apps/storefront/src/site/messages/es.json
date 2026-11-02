@@ -1,0 +1,19 @@
+{
+  "NotFound": {
+    "title": "Página no encontrada",
+    "message": "La página que buscas no existe, se movió o no está disponible por el momento.",
+    "goHome": "Ir al inicio",
+    "browseProducts": "Ver productos",
+    "popularCollections": "Colecciones populares"
+  },
+  "Footer": {
+    "description": "Dulces para endulzar tu día y compartir con quien más quieres.",
+    "shop": "Tienda",
+    "customer": "Cliente",
+    "shopAll": "Ver todo",
+    "orders": "Mis pedidos",
+    "account": "Mi cuenta",
+    "contact": "Contacto",
+    "copyright": "Dulcería Alegría. Todos los derechos reservados."
+  }
+}

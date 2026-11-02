@@ -1,0 +1,28 @@
+{
+  "Hero": {
+    "badge": "Süßwarenladen",
+    "title": "Versüße deinen Tag mit",
+    "titleHighlight": "Freude",
+    "subtitle": "Gummibärchen, Lutscher, Schokolade und Bonbons zum Teilen, Verschenken oder um dir selbst eine kleine Freude zu machen.",
+    "shopNow": "Zum Shop",
+    "buildBox": "Meine Box zusammenstellen",
+    "imageAlt": "Logo von Dulcería Alegría: ein gelbes Maskottchen mit erhobenen Daumen"
+  },
+  "Home": {
+    "pageTitle": "Online-Süßwarenladen",
+    "description": "Gummibärchen, Lutscher, Schokolade und Bonbons zum Teilen, Verschenken oder Selbstgenießen. Jetzt online bei Dulcería Alegría einkaufen.",
+    "ogDescription": "Gummibärchen, Lutscher, Schokolade und Bonbons zum Teilen, Verschenken oder Selbstgenießen.",
+    "categories": {
+      "title": "Nach Kategorie entdecken"
+    },
+    "favorites": {
+      "title": "Die Favoriten",
+      "viewAll": "Alle Süßigkeiten ansehen"
+    },
+    "buildBox": {
+      "title": "Stelle deine Süßigkeitenbox zusammen",
+      "description": "Such deine Favoriten aus, wir packen sie ein und machen die Box fertig zum Verschenken.",
+      "cta": "Loslegen"
+    }
+  }
+}

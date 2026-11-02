@@ -1,0 +1,25 @@
+{
+  "Common": {
+    "loading": "Cargando...",
+    "sending": "Enviando...",
+    "sku": "SKU",
+    "siteDescription": "Compra los mejores dulces en {siteName}. Gomitas, paletas, chocolates y caramelos con entrega rápida."
+  },
+  "Errors": {
+    "fieldsRequired": "Todos los campos son obligatorios",
+    "passwordsMismatch": "Las contraseñas no coinciden",
+    "unexpectedError": "Ocurrió un error inesperado. Inténtalo de nuevo.",
+    "emailPasswordRequired": "El correo electrónico y la contraseña son obligatorios",
+    "verifyEmailFirst": "Verifica tu correo electrónico antes de iniciar sesión.",
+    "invalidCredentials": "Correo electrónico o contraseña incorrectos.",
+    "emailRequired": "El correo electrónico es obligatorio",
+    "firstLastNameRequired": "El nombre y los apellidos son obligatorios",
+    "passwordEmailRequired": "La contraseña y el nuevo correo electrónico son obligatorios",
+    "invalidEmail": "Ingresa un correo electrónico válido",
+    "failedUpdateCustomer": "No se pudo actualizar la información del cliente",
+    "newPasswordMustDiffer": "La nueva contraseña debe ser diferente de la actual",
+    "failedPasswordReset": "No se pudo solicitar el restablecimiento de contraseña",
+    "verificationTokenRequired": "El token de verificación es obligatorio",
+    "failedAddToCart": "No se pudo agregar el artículo al carrito"
+  }
+}

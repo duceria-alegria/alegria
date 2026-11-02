@@ -1,0 +1,28 @@
+{
+  "Hero": {
+    "badge": "Tienda de dulces",
+    "title": "Endulza tu día con",
+    "titleHighlight": "alegría",
+    "subtitle": "Gomitas, paletas, chocolates y caramelos para compartir, regalar o consentirte un poquito.",
+    "shopNow": "Ver la tienda",
+    "buildBox": "Armar mi caja",
+    "imageAlt": "Logotipo de Dulcería Alegría: una mascota amarilla con los pulgares arriba"
+  },
+  "Home": {
+    "pageTitle": "Tienda de dulces en línea",
+    "description": "Gomitas, paletas, chocolates y caramelos para compartir, regalar o consentirte un poquito. Compra en línea en Dulcería Alegría.",
+    "ogDescription": "Gomitas, paletas, chocolates y caramelos para compartir, regalar o consentirte un poquito.",
+    "categories": {
+      "title": "Explora por categoría"
+    },
+    "favorites": {
+      "title": "Los favoritos",
+      "viewAll": "Ver todos los dulces"
+    },
+    "buildBox": {
+      "title": "Arma tu caja de dulces",
+      "description": "Elige tus favoritos, nosotros los acomodamos y la dejamos lista para regalar.",
+      "cta": "Empezar"
+    }
+  }
+}
