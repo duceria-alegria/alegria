@@ -9,3 +9,5 @@ static/email/test-emails
 .env
 .env.*
 !.env.example
+# Compose de desarrollo local (trae contraseñas de ejemplo); no se versiona.
+docker-compose.yml
