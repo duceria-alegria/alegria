@@ -1,5 +1,5 @@
-# Despliega el backend Vendure en cs-alegria con un runner self-hosted instalado en esa misma máquina:
-# construye la imagen allí y levanta docker-compose.prod.yml. No usa registry ni SSH.
+# Despliega el backend Vendure y la tienda en cs-alegria con un runner self-hosted instalado en esa misma máquina:
+# construye las imágenes allí y levanta docker-compose.prod.yml. No usa registry ni SSH.
 # Configuración única (runner, .env.prod): ver "Deploy with GitHub Actions" en README.md.
 #
 # SEGURIDAD: un runner self-hosted ejecuta el código del workflow con acceso a tu servidor.
@@ -13,6 +13,7 @@ on:
         branches: [main]
         paths:
             - 'apps/server/**'
+            - 'apps/storefront/**'
             - 'pnpm-lock.yaml'
             - 'pnpm-workspace.yaml'
             - 'package.json'
@@ -45,8 +46,12 @@ jobs:
 
             # `--wait` falla el job si el server no queda sano (healthcheck /health) a tiempo.
             # El primer build en un equipo modesto puede tardar varios minutos.
-            - name: Construir y desplegar
-              run: $COMPOSE up -d --build --remove-orphans --wait --wait-timeout 300
+            - name: Construir y desplegar backend
+              run: $COMPOSE up -d --build --remove-orphans --wait --wait-timeout 300 postgres server worker
+
+            # La build de la tienda consulta la Shop API, por eso va DESPUÉS de que el server esté sano.
+            - name: Construir y desplegar tienda
+              run: $COMPOSE up -d --build --wait --wait-timeout 300 storefront
 
             - name: Estado
               if: always()

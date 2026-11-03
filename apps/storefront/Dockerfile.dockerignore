@@ -1,0 +1,16 @@
+# Contexto de build = raíz del monorepo (ver apps/storefront/Dockerfile).
+# BuildKit usa este archivo en vez del .dockerignore de la raíz, que es del backend.
+
+# Los .env tienen valores de desarrollo (apuntan a localhost): en producción todo entra por build args.
+**/.env
+**/.env.*
+**/node_modules
+**/.next
+**/.git
+**/*.log
+**/*.tsbuildinfo
+**/.tgrep
+**/.claude
+
+# Esta imagen es solo de la tienda.
+apps/server

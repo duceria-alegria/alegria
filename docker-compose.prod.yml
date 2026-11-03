@@ -1,7 +1,11 @@
-# Stack de producción del backend Vendure: PostgreSQL + server + worker.
+# Stack de producción: PostgreSQL + server + worker (backend Vendure) y la tienda (Next.js).
 #
 #   cp .env.prod.example .env.prod      # y rellena los valores
-#   docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
+#   docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build postgres server worker
+#   docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build storefront
+#
+# Son dos pasos porque `next build` consulta la Shop API al pre-renderizar: el server debe estar
+# sano ANTES de construir la tienda (ver el servicio storefront).
 #
 # (El docker-compose.yml de apps/server es solo para desarrollo local.)
 #
@@ -9,8 +13,8 @@
 # ejecuta `up -d --build` con --env-file /opt/alegria/.env.prod. SERVER_IMAGE e IMAGE_TAG son opcionales
 # (sirven para usar una imagen de un registry en vez de compilar).
 #
-# No incluye proxy inverso ni TLS: pon delante el que uses (Caddy, Traefik, nginx...)
-# apuntando al puerto publicado del server. El server asume 1 proxy (trustProxy: 1).
+# No incluye proxy inverso ni TLS: pon delante el que uses (Caddy, Traefik, nginx, Cloudflare Tunnel...)
+# apuntando a los puertos publicados (server 3001, tienda 3002). El server asume 1 proxy (trustProxy: 1).
 
 name: alegria-prod
 
@@ -88,6 +92,38 @@ services:
         # El worker no sirve HTTP; desactiva el healthcheck heredado del Dockerfile.
         healthcheck:
             disable: true
+
+    storefront:
+        build:
+            context: .
+            dockerfile: apps/storefront/Dockerfile
+            # `next build` pre-renderiza páginas con datos de la Shop API: la build necesita llegar al
+            # server ya levantado. Con red del host lo alcanza en su puerto publicado (no depende de
+            # SERVER_BIND, ni del túnel, ni de DNS).
+            network: host
+            args:
+                VENDURE_SHOP_API_URL: http://127.0.0.1:${SERVER_PORT:-3001}/shop-api
+                ASSETS_URL: ${PUBLIC_URL:?Define PUBLIC_URL en .env.prod}
+                NEXT_PUBLIC_SITE_URL: ${STOREFRONT_URL:?Define STOREFRONT_URL en .env.prod}
+                NEXT_PUBLIC_SITE_NAME: ${SITE_NAME:-Dulcería Alegría}
+                NEXT_PUBLIC_CONTACT_PHONE: ${CONTACT_PHONE:-}
+                NEXT_PUBLIC_CONTACT_EMAIL: ${CONTACT_EMAIL:-}
+                NEXT_PUBLIC_CONTACT_ADDRESS: ${CONTACT_ADDRESS:-}
+                NEXT_PUBLIC_CONTACT_HOURS: ${CONTACT_HOURS:-}
+        image: ${STOREFRONT_IMAGE:-alegria-storefront}:${IMAGE_TAG:-latest}
+        restart: unless-stopped
+        depends_on:
+            server:
+                condition: service_healthy
+        environment:
+            NODE_ENV: production
+            # En runtime la tienda habla con el server por la red interna de compose.
+            VENDURE_SHOP_API_URL: http://server:3000/shop-api
+            # Solo si configuras el webhook de revalidación (POST /api/revalidate); sin esto responde 500.
+            REVALIDATION_SECRET: ${REVALIDATION_SECRET:-}
+        ports:
+            - '${STOREFRONT_BIND:-127.0.0.1}:${STOREFRONT_PORT:-3002}:3000'
+        # El HEALTHCHECK viene del Dockerfile (GET /).
 
 volumes:
     # Datos de la base de datos. ¡Respáldalos!
