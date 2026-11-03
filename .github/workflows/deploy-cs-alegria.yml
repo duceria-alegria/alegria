@@ -1,0 +1,59 @@
+# Despliega el backend Vendure en cs-alegria con un runner self-hosted instalado en esa misma máquina:
+# construye la imagen allí y levanta docker-compose.prod.yml. No usa registry ni SSH.
+# Configuración única (runner, .env.prod): ver "Deploy with GitHub Actions" en README.md.
+#
+# SEGURIDAD: un runner self-hosted ejecuta el código del workflow con acceso a tu servidor.
+# Por eso este workflow solo se dispara con push a main o manualmente, NUNCA con pull_request.
+# Si el repo es público, desactiva los workflows de forks (Settings → Actions → General).
+
+name: Deploy cs-alegria
+
+on:
+    push:
+        branches: [main]
+        paths:
+            - 'apps/server/**'
+            - 'pnpm-lock.yaml'
+            - 'pnpm-workspace.yaml'
+            - 'package.json'
+            - 'docker-compose.prod.yml'
+            - '.github/workflows/deploy-cs-alegria.yml'
+    workflow_dispatch:
+
+# Un deploy a la vez; si llega otro push, espera en vez de pisar el que está en curso.
+concurrency:
+    group: deploy-cs-alegria
+    cancel-in-progress: false
+
+jobs:
+    deploy:
+        runs-on: [self-hosted, cs-alegria]
+        timeout-minutes: 30
+        env:
+            # Fuera del workspace: checkout borra los archivos no versionados en cada corrida.
+            ENV_FILE: /opt/alegria/.env.prod
+            COMPOSE: docker compose --env-file /opt/alegria/.env.prod -f docker-compose.prod.yml
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Verificar .env.prod
+              run: |
+                  if [ ! -r "$ENV_FILE" ]; then
+                      echo "::error::No existe o no es legible $ENV_FILE. Créalo a partir de .env.prod.example (ver README)."
+                      exit 1
+                  fi
+
+            # `--wait` falla el job si el server no queda sano (healthcheck /health) a tiempo.
+            # El primer build en un equipo modesto puede tardar varios minutos.
+            - name: Construir y desplegar
+              run: $COMPOSE up -d --build --remove-orphans --wait --wait-timeout 300
+
+            - name: Estado
+              if: always()
+              run: $COMPOSE ps
+
+            - name: Limpiar imágenes y caché viejos
+              if: success()
+              run: |
+                  docker image prune -f
+                  docker builder prune -f --filter until=168h

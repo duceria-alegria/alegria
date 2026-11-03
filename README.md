@@ -80,45 +80,36 @@ docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
 
 ### Deploy with GitHub Actions
 
-[`.github/workflows/deploy-server.yml`](./.github/workflows/deploy-server.yml) runs on every push to `main` that
-touches the server (or manually from the Actions tab). It builds the image, pushes it to
-`ghcr.io/<owner>/<repo>-server` tagged with the commit SHA and `latest`, then connects to your VPS over SSH, pulls the
-image and runs `docker compose up -d --wait`. The job fails if the server does not become healthy within 3 minutes.
+[`.github/workflows/deploy-cs-alegria.yml`](./.github/workflows/deploy-cs-alegria.yml) runs on every push to `main`
+that touches the server (or manually from the Actions tab) on a **self-hosted runner installed on the production
+machine** (labels `self-hosted`, `cs-alegria`). It builds the image there and runs `docker compose up -d --build --wait`,
+so there is no registry and no SSH. The job fails if the server does not become healthy within 5 minutes.
 The workflow must live at the root of the git repository (this directory).
 
-**One-time server setup** (any Linux VPS with Docker + the Compose plugin):
+**One-time setup on the machine** (the user that runs the runner, `actions`, must be in the `docker` group):
 
 ```bash
-# on the server, as the deploy user (must be able to run docker)
-mkdir -p ~/alegria && cd ~/alegria
-# create .env.prod here (see .env.prod.example); secrets stay on the server, never in GitHub
+sudo install -d -o actions -g actions -m 750 /opt/alegria
+sudo -u actions cp .env.prod.example /opt/alegria/.env.prod   # or create it from the template in this repo
+sudo -u actions nano /opt/alegria/.env.prod                   # fill in the values
+sudo chmod 640 /opt/alegria/.env.prod
 ```
 
-**One-time GitHub setup** (Settings → Secrets and variables → Actions; optionally create an Environment called
-`production` to require manual approval):
+`.env.prod` lives outside the runner workspace on purpose: `actions/checkout` deletes untracked files on every run.
+Secrets stay on the machine and never go through GitHub. Generate secrets with `openssl rand -base64 32`.
 
-| Name | Kind | Value |
-| --- | --- | --- |
-| `DEPLOY_HOST` | secret | VPS hostname or IP |
-| `DEPLOY_USER` | secret | SSH user on the VPS |
-| `DEPLOY_SSH_KEY` | secret | private key; generate a dedicated one with `ssh-keygen -t ed25519 -f deploy_key -N ""` and add `deploy_key.pub` to `~/.ssh/authorized_keys` on the VPS |
-| `DEPLOY_KNOWN_HOSTS` | secret | output of `ssh-keyscan -p <port> <host>` (verified against the host on every deploy) |
-| `DEPLOY_PORT` | secret, optional | SSH port, default `22` |
-| `DEPLOY_PATH` | variable, optional | directory on the VPS, default `~/alegria` |
+**Security:** a self-hosted runner executes workflow code with access to the machine. The workflow only triggers on
+push to `main` and manual runs, never on `pull_request`. If the repository is public, also disable workflows for
+forks (Settings → Actions → General) and require approval for outside collaborators.
 
-The workflow copies `docker-compose.prod.yml` to the VPS on each deploy; `.env.prod` is only read from there.
+**Reaching the server from a reverse proxy / Cloudflare Tunnel:** by default the server is published on
+`127.0.0.1:3001`, which a proxy running in another container cannot reach. Either set `SERVER_BIND=0.0.0.0` in
+`.env.prod` and point the tunnel at `http://<machine-ip>:3001`, or attach the proxy container to the compose network
+(`alegria-prod_default`) and target `http://server:3000`. Set `PUBLIC_URL` to the public address.
 
-**Rollback:** every image is also tagged with its commit SHA. On the VPS run:
-
-```bash
-cd ~/alegria
-SERVER_IMAGE=ghcr.io/<owner>/<repo>-server IMAGE_TAG=<old-sha> \
-  docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --no-build --wait
-```
-
-(You need to be logged in to GHCR on the VPS for this, e.g. `docker login ghcr.io` with a token that has
-`read:packages`, because the workflow's own token expires when the job ends.) Database migrations are not reverted
-by a rollback.
+**Rollback:** redeploy an older commit by re-running the workflow from that commit (Actions → the run → Re-run), or
+on the machine check out the old commit and run the `up -d --build` command from above. Database migrations are not
+reverted. Back up the `alegria-prod_postgres_data` and `alegria-prod_assets_data` volumes.
 
 ## Learn More
 
