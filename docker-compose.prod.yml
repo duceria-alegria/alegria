@@ -14,7 +14,9 @@
 # (sirven para usar una imagen de un registry en vez de compilar).
 #
 # No incluye proxy inverso ni TLS: pon delante el que uses (Caddy, Traefik, nginx, Cloudflare Tunnel...)
-# apuntando a los puertos publicados (server 3001, tienda 3002). El server asume 1 proxy (trustProxy: 1).
+# apuntando a los puertos publicados (server 3001, tienda 3002) o, si corre en Docker (cloudflared), unido
+# a la red externa `proxy` y apuntando a http://server:3000 y http://storefront:3000.
+# El server asume 1 proxy (trustProxy: 1).
 
 name: alegria-prod
 
@@ -74,6 +76,10 @@ services:
             - '${SERVER_BIND:-127.0.0.1}:${SERVER_PORT:-3001}:3000'
         volumes:
             - assets_data:/app/apps/server/static/assets
+        # Red `proxy` compartida con cloudflared: el túnel llega a http://server:3000.
+        networks:
+            - default
+            - proxy
         # El HEALTHCHECK viene del Dockerfile (GET /health).
         # Al arrancar, el server corre las migraciones pendientes antes de abrir el puerto.
 
@@ -123,7 +129,17 @@ services:
             REVALIDATION_SECRET: ${REVALIDATION_SECRET:-}
         ports:
             - '${STOREFRONT_BIND:-127.0.0.1}:${STOREFRONT_PORT:-3002}:3000'
+        # Red `proxy` compartida con cloudflared: el túnel llega a http://storefront:3000.
+        networks:
+            - default
+            - proxy
         # El HEALTHCHECK viene del Dockerfile (GET /).
+
+networks:
+    # Red externa donde vive el contenedor de cloudflared (créala una vez: `docker network create proxy`;
+    # el workflow de deploy ya la asegura). Sin ella, `up` falla.
+    proxy:
+        external: true
 
 volumes:
     # Datos de la base de datos. ¡Respáldalos!
