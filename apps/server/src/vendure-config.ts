@@ -54,6 +54,10 @@ export const config: VendureConfig = {
             origin: IS_DEV ? true : (process.env.CORS_ORIGINS?.split(',').map(o => o.trim()).filter(Boolean) ?? []),
             credentials: true,
         },
+        // Con sesiones por cookie, sin esto un sitio externo puede hacer login CSRF (multipart/form-data
+        // o GET no disparan preflight). El Dashboard ya envía `Apollo-Require-Preflight` y el
+        // storefront solo hace POST application/json, así que ninguno se ve afectado.
+        csrfPrevention: true,
     },
     authOptions: {
         tokenMethod: ['bearer', 'cookie'],
