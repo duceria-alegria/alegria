@@ -27,7 +27,7 @@ export function LoginButton({isLoggedIn, ...props}: LoginButtonProps) {
                     }
                 }}>
             {!isLoggedIn && <User className="size-5" aria-hidden="true" />}
-            {isLoggedIn ? t('signOut') : t('signIn')}
+            {isLoggedIn ? t('signOut') : <span className="max-sm:sr-only">{t('signIn')}</span>}
         </button>
     )
 }

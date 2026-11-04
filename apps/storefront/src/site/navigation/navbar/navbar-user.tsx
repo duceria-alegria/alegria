@@ -4,7 +4,9 @@ import {Button} from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
+    DropdownMenuGroup,
     DropdownMenuItem,
+    DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
@@ -23,18 +25,22 @@ export async function NavbarUser() {
         return (
             <Button
                 render={<LoginButton isLoggedIn={false} />}
-                className="h-11 gap-2 rounded-full px-[18px] text-[15px] font-extrabold hover:bg-brand-purple-deep"
+                className="h-11 gap-2 rounded-full px-[18px] text-[15px] font-extrabold hover:bg-brand-purple-deep max-sm:w-11 max-sm:px-0"
             />
         );
     }
 
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger render={<Button variant="outline" className="h-11 gap-2 rounded-full border-[1.5px] px-4 text-[15px] font-bold" />}>
+            <DropdownMenuTrigger render={<Button variant="outline" className="h-11 gap-2 rounded-full border-[1.5px] px-4 text-[15px] font-bold max-sm:w-11 max-sm:px-0" />}>
                 <User className="size-5"/>
-                {t('greeting', {name: customer.firstName})}
+                <span className="max-sm:sr-only">{t('greeting', {name: customer.firstName})}</span>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
+                <DropdownMenuGroup className="sm:hidden">
+                    <DropdownMenuLabel className="text-sm font-bold text-primary">{t('greeting', {name: customer.firstName})}</DropdownMenuLabel>
+                    <DropdownMenuSeparator/>
+                </DropdownMenuGroup>
                 <DropdownMenuItem render={<Link href="/account/profile" />}>{t('profile')}</DropdownMenuItem>
                 <DropdownMenuItem render={<Link href="/account/orders" />}>{t('orders')}</DropdownMenuItem>
                 <DropdownMenuSeparator/>

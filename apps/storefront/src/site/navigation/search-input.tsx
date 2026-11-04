@@ -16,6 +16,7 @@ export function SearchInput() {
     const [open, setOpen] = useState(false);
     const triggerRef = useRef<HTMLButtonElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const formRef = useRef<HTMLFormElement>(null);
     const wasOpen = useRef(false);
 
     useEffect(() => {
@@ -31,6 +32,19 @@ export function SearchInput() {
         return () => window.clearTimeout(id);
     }, [open]);
 
+    // The panel reveals from the trigger. On phones it spans the whole header row, so the trigger is no
+    // longer at the panel's right edge: tell the CSS how far in it sits.
+    const openPanel = () => {
+        const panel = formRef.current;
+        const trigger = triggerRef.current;
+        const anchor = panel?.offsetParent;
+        if (panel && trigger && anchor) {
+            const origin = anchor.getBoundingClientRect().right - trigger.getBoundingClientRect().right;
+            panel.style.setProperty('--search-origin', `${Math.max(0, origin)}px`);
+        }
+        setOpen(true);
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!searchValue.trim()) return;
@@ -38,19 +52,20 @@ export function SearchInput() {
     };
 
     return (
-        <div className={cn('relative h-11 w-11', open && 'search-open')}>
+        <div className={cn('relative h-11 w-11 max-sm:static', open && 'search-open')}>
             <button
                 ref={triggerRef}
                 type="button"
                 aria-label={t('openSearch')}
                 aria-expanded={open}
                 aria-controls="site-search"
-                onClick={() => setOpen(true)}
+                onClick={openPanel}
                 className="search-trigger flex size-11 items-center justify-center rounded-full border-[1.5px] border-border bg-background text-primary transition-colors hover:bg-accent"
             >
                 <Search className="size-5" aria-hidden="true" />
             </button>
             <form
+                ref={formRef}
                 id="site-search"
                 role="search"
                 onSubmit={handleSubmit}
