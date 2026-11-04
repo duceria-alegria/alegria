@@ -9,8 +9,8 @@ import { Loader2, Store, Truck } from 'lucide-react';
 import { useRouter } from '@/platform/i18n/navigation';
 import { useCheckout } from '../checkout-provider';
 import { setShippingMethod as setShippingMethodAction, setPickupMethod as setPickupMethodAction } from '../actions';
-import {useTranslations, useLocale} from 'next-intl';
-import {toIntlLocale} from '@/platform/i18n/locale-utils';
+import { Price } from '@/features/pricing/price';
+import {useTranslations} from 'next-intl';
 
 interface DeliveryStepProps {
   onComplete: () => void;
@@ -20,8 +20,6 @@ interface DeliveryStepProps {
 
 export default function DeliveryStep({ onComplete, pickup = false }: DeliveryStepProps) {
   const t = useTranslations('Checkout');
-  const locale = useLocale();
-  const intlLocale = toIntlLocale(locale);
   const router = useRouter();
   const { shippingMethods, pickupMethods, order } = useCheckout();
   const methods = pickup ? pickupMethods : shippingMethods;
@@ -84,10 +82,7 @@ export default function DeliveryStep({ onComplete, pickup = false }: DeliverySte
                   <p className="font-semibold">
                     {method.priceWithTax === 0
                       ? t('free')
-                      : (method.priceWithTax / 100).toLocaleString(intlLocale, {
-                          style: 'currency',
-                          currency: 'USD',
-                        })}
+                      : <Price value={method.priceWithTax} currencyCode={order.currencyCode} />}
                   </p>
                 </div>
               </div>

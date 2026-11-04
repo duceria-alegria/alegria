@@ -8,7 +8,7 @@ interface PriceProps {
     currencyCode?: string;
 }
 
-export function Price({value, currencyCode = 'USD'}: PriceProps) {
+export function Price({value, currencyCode = 'MXN'}: PriceProps) {
     const locale = useLocale();
     const intlLocale = toIntlLocale(locale);
     return (
