@@ -79,6 +79,11 @@
   padding-inline: clamp(20px, 4vw, 40px);
 }
 
+/* Gutter of container-page, for content that scrolls edge to edge inside a full-bleed parent. */
+@utility page-gutter {
+  padding-inline: clamp(20px, 4vw, 40px);
+}
+
 :root {
   --radius: 0.625rem;
   --background: #ffffff;

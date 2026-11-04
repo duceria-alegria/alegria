@@ -37,7 +37,7 @@ export function CurrencyPicker({availableCurrencyCodes, activeCurrencyCode}: Cur
     return (
         <DropdownMenu>
             <DropdownMenuTrigger render={<Button variant="outline" className="h-11 gap-1.5 rounded-full border-[1.5px] px-3 text-[15px] font-bold" aria-label={t('switchCurrency')} />}>
-                <Coins className="size-5" />
+                <Coins className="size-5 max-sm:hidden" />
                 <span>{activeCurrencyCode}</span>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

@@ -14,6 +14,16 @@
   pointer-events: none;
   transition: visibility 0s linear 0.65s;
 }
+/* Phones: the panel spans the whole header row (its positioned ancestor) instead of a fixed-width pill. */
+@media (width < 40rem) {
+  .search-wrap {
+    left: 0;
+    right: 0;
+    top: 50%;
+    width: auto;
+    translate: 0 -50%;
+  }
+}
 .search-open .search-wrap {
   visibility: visible;
   pointer-events: auto;
@@ -22,7 +32,7 @@
 
 .search-panel {
   box-shadow: inset 0 0 0 1.5px var(--primary);
-  clip-path: inset(0 0 0 calc(100% - 44px) round 999px);
+  clip-path: inset(0 var(--search-origin, 0px) 0 calc(100% - 44px - var(--search-origin, 0px)) round 999px);
   opacity: 0;
   transition: clip-path 0.45s cubic-bezier(0.65, 0, 0.35, 1) 0.05s, opacity 0.25s ease 0.25s;
 }
