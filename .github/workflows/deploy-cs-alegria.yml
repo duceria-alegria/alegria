@@ -44,6 +44,10 @@ jobs:
                       exit 1
                   fi
 
+            # Red externa compartida con el túnel de Cloudflare (docker-compose.prod.yml la declara external).
+            - name: Asegurar red proxy
+              run: docker network inspect proxy >/dev/null 2>&1 || docker network create proxy
+
             # `--wait` falla el job si el server no queda sano (healthcheck /health) a tiempo.
             # El primer build en un equipo modesto puede tardar varios minutos.
             - name: Construir y desplegar backend
