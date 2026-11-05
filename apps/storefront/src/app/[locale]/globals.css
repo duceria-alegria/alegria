@@ -161,6 +161,25 @@
   body {
     @apply bg-background text-foreground;
   }
+  /*
+   * Store backdrop: warm cream with soft, blurred washes of the brand colours. Fixed behind everything so the
+   * colour stays put while content scrolls. Kept pastel on purpose: text is dark purple and the product tiles
+   * are stronger pastels, so both stay readable. --background itself stays white for inputs, popovers and menus.
+   */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 70% 55% at 0% 0%, color-mix(in oklab, var(--color-brand-pink) 20%, transparent), transparent),
+      radial-gradient(ellipse 65% 50% at 100% 6%, color-mix(in oklab, var(--color-brand-cyan) 22%, transparent), transparent),
+      radial-gradient(ellipse 60% 50% at 100% 62%, color-mix(in oklab, var(--color-brand-orange) 14%, transparent), transparent),
+      radial-gradient(ellipse 70% 55% at 0% 100%, color-mix(in oklab, var(--color-brand-purple-deep) 11%, transparent), transparent),
+      radial-gradient(ellipse 65% 50% at 100% 100%, color-mix(in oklab, var(--color-brand-yellow) 30%, transparent), transparent),
+      color-mix(in oklab, var(--color-brand-yellow-soft) 32%, white);
+  }
 }
 
 @keyframes fade-up {

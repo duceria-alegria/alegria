@@ -13,7 +13,7 @@ import {SITE_NAME} from '@/config/metadata';
 export function Navbar() {
     return (
         <>
-            <header className="bg-background">
+            <header>
                 <div className="container-page pt-3 max-sm:pb-2.5 max-sm:pt-2.5">
                     {/* On phones everything stays on one row; the search panel anchors to this row to span it. */}
                     <div className="relative flex flex-wrap items-center justify-between gap-x-2.5 gap-y-3 max-sm:flex-nowrap max-sm:gap-x-2">
