@@ -19,10 +19,10 @@ export function Navbar() {
                     <div className="relative flex flex-wrap items-center justify-between gap-x-2.5 gap-y-3 max-sm:flex-nowrap max-sm:gap-x-2">
                         <NavigationLink href="/" className="block shrink-0">
                             <Image
-                                src="/brand/logo.png"
+                                src="/brand/logo.svg"
                                 alt={SITE_NAME}
-                                width={326}
-                                height={320}
+                                width={358}
+                                height={352}
                                 preload
                                 className="block h-14 w-auto sm:h-16"
                             />

@@ -158,10 +158,10 @@ export function HeroStage({alt}: {alt: string}) {
 
                 <div className="hero-layer absolute inset-x-0 -top-[9%] bottom-[5%] flex items-center justify-center" style={{'--d': 75} as CSSProperties}>
                     <Image
-                        src="/brand/mascot-cutout.svg"
+                        src="/brand/logo.svg"
                         alt={alt}
-                        width={629}
-                        height={618}
+                        width={1074}
+                        height={1056}
                         preload
                         sizes="(max-width: 640px) 88vw, 520px"
                         className="hero-float h-full w-auto max-w-none drop-shadow-[0_22px_18px_rgba(43,19,64,0.3)] [--dur:7s] [--float:10px]"
