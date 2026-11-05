@@ -21,7 +21,6 @@ export async function Footer() {
 
     const t = await getTranslations({locale, namespace: 'Footer'});
     const collections = await getTopCollections(locale);
-    const [brandLead, ...brandRest] = SITE_NAME.split(' ');
     const contactLines = [
         CONTACT.phone && <a href={`tel:${CONTACT.phone.replace(/\s/g, '')}`} className={linkClass}>{CONTACT.phone}</a>,
         CONTACT.email && <a href={`mailto:${CONTACT.email}`} className={linkClass}>{CONTACT.email}</a>,
@@ -34,12 +33,15 @@ export async function Footer() {
             <div className="container-page pb-7 pt-[clamp(40px,6vw,72px)]">
                 <div className="flex flex-wrap gap-x-14 gap-y-10">
                     <div className="flex min-w-0 flex-[2_1_280px] flex-col items-start gap-4">
-                        <NavigationLink href="/" className="flex items-center gap-2.5">
-                            <Image src="/brand/mascot.png" alt="" width={305} height={240} className="block h-[52px] w-auto" />
-                            <span className="font-display text-2xl font-extrabold leading-none tracking-[-0.01em]">
-                                {brandLead}
-                                {brandRest.length > 0 && <> <span className="text-brand-yellow">{brandRest.join(' ')}</span></>}
-                            </span>
+                        {/* Same logo file as the top bar, unaltered. The hairline white halo keeps its dark outline readable on the purple footer; the second shadow lifts it. */}
+                        <NavigationLink href="/" className="block">
+                            <Image
+                                src="/brand/logo.svg"
+                                alt={SITE_NAME}
+                                width={358}
+                                height={352}
+                                className="block h-30 w-auto [filter:drop-shadow(0_0_1.5px_#fff)_drop-shadow(0_8px_14px_rgb(0_0_0/0.45))]"
+                            />
                         </NavigationLink>
                         <p className="max-w-[34ch] text-[15px] leading-relaxed text-white/80">
                             {t('description')}
