@@ -16,6 +16,8 @@ declare global {
             EMAIL_FROM_ADDRESS?: string;
             STOREFRONT_URL?: string;
             PUBLIC_URL?: string;
+            SEARCH_LOG_SECRET?: string;
+            SEARCH_LOG_RETENTION_DAYS?: string;
             DB_HOST: string;
             DB_PORT: number;
             DB_NAME: string;

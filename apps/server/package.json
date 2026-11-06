@@ -13,7 +13,11 @@
     "build:dashboard": "vendure build dashboard",
     "start:server": "node ./dist/index.js",
     "start:worker": "node ./dist/index-worker.js",
-    "start": "vendure start all"
+    "start": "vendure start all",
+    "test": "node --require ts-node/register --test \"src/**/*.test.ts\"",
+    "search:golden": "ts-node src/reporte-busqueda.ts",
+    "search:reindex": "ts-node src/reindex-busqueda.ts",
+    "search:terms": "ts-node src/reporte-terminos.ts"
   },
   "dependencies": {
     "@nestjs/common": "12.2.0",
