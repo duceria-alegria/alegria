@@ -12,7 +12,7 @@ interface ProductCardCartControlProps {
 }
 
 const stepperButton =
-    "flex size-9 items-center justify-center rounded-full bg-brand-yellow text-primary transition-colors hover:bg-brand-yellow-deep disabled:pointer-events-none disabled:opacity-60";
+    "flex size-7 items-center justify-center rounded-full bg-brand-yellow text-primary transition-colors hover:bg-brand-yellow-deep disabled:pointer-events-none disabled:opacity-60";
 
 // Sits above the card's stretched link so these clicks don't navigate to the product page.
 export function ProductCardCartControl({variantId}: ProductCardCartControlProps) {
@@ -54,9 +54,9 @@ export function ProductCardCartControl({variantId}: ProductCardCartControlProps)
                 aria-label={t('addToCart')}
                 disabled={isPending}
                 onClick={handleAdd}
-                className="relative z-10 flex size-11 shrink-0 items-center justify-center rounded-full bg-brand-yellow text-primary transition-colors hover:bg-brand-yellow-deep group-hover:bg-brand-yellow-deep disabled:pointer-events-none disabled:opacity-60"
+                className="relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-yellow text-primary shadow-button transition-colors hover:bg-brand-yellow-deep group-hover:bg-brand-yellow-deep disabled:pointer-events-none disabled:opacity-60"
             >
-                <Plus className="size-5" strokeWidth={2.4}/>
+                <Plus className="size-4" strokeWidth={2.4}/>
             </button>
         );
     }
@@ -71,10 +71,10 @@ export function ProductCardCartControl({variantId}: ProductCardCartControlProps)
                 className={stepperButton}
             >
                 {cartLine.quantity <= 1
-                    ? <Trash2 className="size-4" strokeWidth={2.4}/>
-                    : <Minus className="size-4" strokeWidth={2.4}/>}
+                    ? <Trash2 className="size-3.5" strokeWidth={2.4}/>
+                    : <Minus className="size-3.5" strokeWidth={2.4}/>}
             </button>
-            <span className="min-w-6 text-center font-display text-base font-extrabold tabular-nums" aria-live="polite">
+            <span className="min-w-5 text-center font-display text-sm font-extrabold tabular-nums" aria-live="polite">
                 {cartLine.quantity}
             </span>
             <button
@@ -84,7 +84,7 @@ export function ProductCardCartControl({variantId}: ProductCardCartControlProps)
                 onClick={() => handleSetQuantity(cartLine.quantity + 1)}
                 className={stepperButton}
             >
-                <Plus className="size-4" strokeWidth={2.4}/>
+                <Plus className="size-3.5" strokeWidth={2.4}/>
             </button>
         </div>
     );

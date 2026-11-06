@@ -70,6 +70,7 @@
   --shadow-card-hover: 0 25px 50px -12px rgb(75 29 110 / 0.35);
   --shadow-tile: 0 10px 15px -3px rgb(75 29 110 / 0.16), 0 4px 6px -4px rgb(75 29 110 / 0.12);
   --shadow-tile-hover: 0 20px 25px -5px rgb(75 29 110 / 0.24);
+  --shadow-button: 0 6px 10px -2px rgb(75 29 110 / 0.32), 0 3px 5px -3px rgb(75 29 110 / 0.24);
 }
 
 @utility container-page {
