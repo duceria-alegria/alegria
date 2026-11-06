@@ -8,15 +8,18 @@ interface PriceProps {
     currencyCode?: string;
 }
 
-export function Price({value, currencyCode = 'USD'}: PriceProps) {
+/** Formats an amount in minor currency units (cents) with the active locale, for use inside text. */
+export function useFormatPrice() {
     const locale = useLocale();
     const intlLocale = toIntlLocale(locale);
-    return (
-        <>
-            {new Intl.NumberFormat(intlLocale, {
-                style: 'currency',
-                currency: currencyCode,
-            }).format(value / 100)}
-        </>
-    );
+    return (value: number, currencyCode = 'USD') =>
+        new Intl.NumberFormat(intlLocale, {
+            style: 'currency',
+            currency: currencyCode,
+        }).format(value / 100);
+}
+
+export function Price({value, currencyCode = 'USD'}: PriceProps) {
+    const formatPrice = useFormatPrice();
+    return <>{formatPrice(value, currencyCode)}</>;
 }

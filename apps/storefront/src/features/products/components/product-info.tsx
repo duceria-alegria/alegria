@@ -7,10 +7,11 @@ import {Button} from '@/components/ui/button';
 import {Label} from '@/components/ui/label';
 import {RadioGroup, RadioGroupItem} from '@/components/ui/radio-group';
 import {Separator} from '@/components/ui/separator';
-import {ShoppingCart, CheckCircle2, Minus, Plus, Trash2} from 'lucide-react';
+import {ShoppingCart, CheckCircle2, Minus, Plus, PiggyBank, Trash2} from 'lucide-react';
 import {addToCart, getCartLine, setCartLineQuantity, type CartLineState} from '@/features/products/add-to-cart';
+import {getBoxSavings} from '@/features/products/box-savings';
 import {toast} from 'sonner';
-import {Price} from '@/features/pricing/price';
+import {Price, useFormatPrice} from '@/features/pricing/price';
 import {useTranslations} from 'next-intl';
 
 interface ProductInfoProps {
@@ -24,6 +25,7 @@ interface ProductInfoProps {
             sku: string;
             priceWithTax: number;
             stockLevel: string;
+            customFields?: {piezasPorCaja?: number | null} | null;
             options: Array<{
                 id: string;
                 code: string;
@@ -53,6 +55,7 @@ interface ProductInfoProps {
 
 export function ProductInfo({product, searchParams, currencyCode}: ProductInfoProps) {
     const t = useTranslations('Product');
+    const formatPrice = useFormatPrice();
     const pathname = usePathname();
     const router = useRouter();
     const currentSearchParams = useSearchParams();
@@ -117,6 +120,15 @@ export function ProductInfo({product, searchParams, currencyCode}: ProductInfoPr
     };
 
     const selectedVariantId = selectedVariant?.id;
+
+    // Only wholesale customers get the box variant, so this is null for everyone else.
+    const boxSavings = useMemo(() => getBoxSavings(product.variants), [product.variants]);
+    const savingsMessageKey =
+        boxSavings && selectedVariantId === boxSavings.pieceVariantId
+            ? 'boxSavingsFromPiece'
+            : boxSavings && selectedVariantId === boxSavings.boxVariantId
+                ? 'boxSavingsFromBox'
+                : null;
 
     // Sync the stepper with whatever the cart already holds for this variant
     useEffect(() => {
@@ -190,6 +202,21 @@ export function ProductInfo({product, searchParams, currencyCode}: ProductInfoPr
                         <Price value={selectedVariant.priceWithTax} currencyCode={currencyCode}/>
                     </p>
                 )}
+                {boxSavings && savingsMessageKey && (
+                    <p className="flex items-start gap-2 rounded-lg bg-green-600/10 px-3 py-2 text-sm text-green-700">
+                        <PiggyBank className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true"/>
+                        <span>
+                            {t.rich(savingsMessageKey, {
+                                pieces: boxSavings.pieces,
+                                percent: boxSavings.percent,
+                                saving: formatPrice(boxSavings.saving, currencyCode),
+                                perPiece: formatPrice(boxSavings.boxPricePerPiece, currencyCode),
+                                piecePrice: formatPrice(boxSavings.piecePrice, currencyCode),
+                                b: (chunks) => <strong className="font-semibold">{chunks}</strong>,
+                            })}
+                        </span>
+                    </p>
+                )}
             </div>
 
             <Separator />
@@ -221,7 +248,7 @@ export function ProductInfo({product, searchParams, currencyCode}: ProductInfoPr
                                             />
                                             <Label
                                                 htmlFor={option.id}
-                                                className="flex items-center justify-center rounded-lg border-2 border-muted bg-popover px-4 py-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground peer-data-[checked]:border-primary peer-data-[checked]:ring-2 peer-data-[checked]:ring-primary/20 peer-data-[checked]:bg-primary/5 cursor-pointer transition-all"
+                                                className="flex items-center justify-center rounded-lg border-2 border-muted bg-popover px-4 py-3 text-sm font-medium shadow-sm hover:shadow-md hover:bg-accent hover:text-accent-foreground peer-data-[checked]:border-primary peer-data-[checked]:shadow-md peer-data-[checked]:ring-2 peer-data-[checked]:ring-primary/20 peer-data-[checked]:bg-primary/5 cursor-pointer transition-all"
                                             >
                                                 {option.name}
                                             </Label>
@@ -258,7 +285,7 @@ export function ProductInfo({product, searchParams, currencyCode}: ProductInfoPr
                         <div className="inline-flex items-center gap-1 rounded-full border border-border bg-background p-1.5 shadow-sm">
                             <Button
                                 size="icon"
-                                className="h-9 w-9 rounded-full"
+                                className="h-9 w-9 rounded-full shadow-md"
                                 aria-label={t('decreaseQuantity')}
                                 disabled={isPending}
                                 onClick={() => handleSetQuantity(cartLine.quantity - 1)}
@@ -270,7 +297,7 @@ export function ProductInfo({product, searchParams, currencyCode}: ProductInfoPr
                             </span>
                             <Button
                                 size="icon"
-                                className="h-9 w-9 rounded-full"
+                                className="h-9 w-9 rounded-full shadow-md"
                                 aria-label={t('increaseQuantity')}
                                 disabled={isPending}
                                 onClick={() => handleSetQuantity(cartLine.quantity + 1)}
@@ -281,7 +308,7 @@ export function ProductInfo({product, searchParams, currencyCode}: ProductInfoPr
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-11 w-11 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                            className="h-11 w-11 rounded-full text-muted-foreground shadow-sm hover:text-destructive hover:bg-destructive/10"
                             aria-label={t('removeFromCart')}
                             disabled={isPending}
                             onClick={() => handleSetQuantity(0)}
@@ -292,7 +319,7 @@ export function ProductInfo({product, searchParams, currencyCode}: ProductInfoPr
                 ) : (
                     <Button
                         size="lg"
-                        className="w-full h-12 text-base font-semibold rounded-lg"
+                        className="w-full h-12 text-base font-semibold rounded-lg shadow-md hover:shadow-lg"
                         disabled={!canAddToCart || isPending}
                         onClick={handleAddToCart}
                     >

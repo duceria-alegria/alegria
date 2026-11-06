@@ -18,6 +18,8 @@
     "decreaseQuantity": "Quitar una unidad",
     "inCart": "{count} en el carrito",
     "sku": "SKU: {sku}",
+    "boxSavingsFromPiece": "Con la caja de {pieces} piezas ahorras <b>{saving}</b> ({percent}%): cada pieza te sale en {perPiece} en lugar de {piecePrice}.",
+    "boxSavingsFromBox": "Ahorras <b>{saving}</b> ({percent}%) frente a comprar {pieces} piezas sueltas: cada pieza te sale en {perPiece} en lugar de {piecePrice}.",
     "from": "Desde",
     "noImage": "Sin imagen",
     "featuredProducts": "Productos destacados",
