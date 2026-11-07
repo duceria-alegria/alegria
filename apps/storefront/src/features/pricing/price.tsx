@@ -12,14 +12,14 @@ interface PriceProps {
 export function useFormatPrice() {
     const locale = useLocale();
     const intlLocale = toIntlLocale(locale);
-    return (value: number, currencyCode = 'USD') =>
+    return (value: number, currencyCode = 'MXN') =>
         new Intl.NumberFormat(intlLocale, {
             style: 'currency',
             currency: currencyCode,
         }).format(value / 100);
 }
 
-export function Price({value, currencyCode = 'USD'}: PriceProps) {
+export function Price({value, currencyCode = 'MXN'}: PriceProps) {
     const formatPrice = useFormatPrice();
     return <>{formatPrice(value, currencyCode)}</>;
 }
