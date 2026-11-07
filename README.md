@@ -48,6 +48,79 @@ Use these credentials to log in to the Vendure Dashboard:
 - **Username**: superadmin
 - **Password**: superadmin
 
+## Selling by box and by piece (wholesale)
+
+A product is sold as **Pieza** and **Caja** with two variants that share an option group "Presentación":
+
+1. In the Dashboard create the option group "Presentación" with the options "Pieza" and "Caja" and add it to the product.
+2. Create one variant per option. On the **Caja** variant fill in **Piezas por caja** (2 or more): that field is what
+   marks a variant as a box. Leave it empty on **Pieza**.
+3. Set the retail price (the variant price) and the three wholesale prices (**Precio mayoreo 1-3**) on both variants.
+   Keep the price per piece of the box (box price ÷ pieces) **lower** than the Pieza price in every list, otherwise loose
+   pieces are cheaper than the box. The system does not check this.
+4. Stock is separate: each variant has its own, closed boxes on one side and loose pieces on the other. When a box is
+   opened, adjust both (−1 Caja, +N Pieza).
+
+Boxes are only visible and purchasable for wholesale customers (Mayoreo 1-3). Visitors and retail customers only see
+Pieza, and the Shop API refuses to add a Caja to their cart. A customer who wants 24 pieces with 20-piece boxes adds
+1 Caja + 4 Piezas (two cart lines). The code lives in `apps/server/src/plugins/precios-por-lista`.
+
+## Product search
+
+Searching a term (the shop search box and the navbar one) ignores accents (`pina` finds `piña`), tolerates typos and
+plurals (`skitles`, `gomitas`), matches spellings that sound the same in Spanish (`lukas` finds `lucas`, `sumba` finds
+`zumba`: c/k/qu, z/s, v/b, y/ll/i, silent h), understands synonyms and ranks by relevance. A product is found by its name, facet
+values, collections, description and SKU (a SKU is matched only when the search contains a digit, so `caja` does not
+match every `-CAJA` variant). The Shop API is unchanged; the code lives in `apps/server/src/plugins/busqueda-productos`.
+
+- **How it works:** the plugin keeps `product_search_document` (one normalized text per product and language, with
+  `pg_trgm` indexes) and `BusquedaProductosStrategy` (passed to `DefaultSearchPlugin`) queries it. The table is derived
+  data: it updates itself on product, variant, collection and facet changes and repairs itself when the server starts.
+- **Synonyms** are in `search-text.ts` (`SYNONYM_GROUPS`) and are only an initial list; replace them with the words
+  your customers use. After editing them (or anything that changes the indexed text in `search-text.ts`: normalization,
+  `phoneticKey`, the synonym groups) bump `SEARCH_TEXT_VERSION`: at its next start the server rebuilds the documents
+  stored with another version, **also in production**, where the ts-node scripts are not available.
+  `pnpm --filter server search:reindex` forces a rebuild in development. The Dashboard's "Reindex" button rebuilds
+  Vendure's own index, not this one.
+- **Checking a change** (synonyms, thresholds, scoring), from `apps/server`:
+  - `npm test` runs the unit tests (text normalization, query parsing, SQL builder, golden-query evaluator).
+  - `npm run search:golden` runs the *golden queries* (`plugins/busqueda-productos/consultas-de-oro.ts`) against the
+    Shop API (the dev server must be running; `--url` points it to another environment, `--verbose` shows the top
+    results, `--only <text>` filters) and exits with 1 if one stops giving the expected products. Queries marked
+    `pendiente` are known limits (e.g. `lukas` for `lucas`): they don't fail, but the report tells you when one starts
+    working. When a customer can't find something, add that search there with what they expected to find.
+- Without an explicit sort a term is ordered by relevance; the storefront offers it as "Relevancia".
+- The shop search box (`apps/storefront/src/features/search/search-box.tsx`) searches while typing: 300 ms after the last
+  key and from 2 characters (Enter searches right away). Typing uses `router.replace`, so the back button does not walk
+  through partial words; Enter and the clear button add a history entry.
+
+### What customers search (search log)
+
+Searches are recorded in the `search_log` table to learn what customers look for, above all what they **don't find**
+(searches with 0 results). Read it in the Dashboard, **Catalog → Búsquedas de clientes** ("Qué buscan los clientes":
+period selector, totals, what they don't find, most searched and a split by customer type: visitor, menudeo,
+mayoreo 1-3), or from the terminal with `pnpm --filter server search:terms` (`-- --days 7 --limit 50`). Both use the
+same queries (`reporte-busquedas-sql.ts`) and only show aggregates, never who searched what.
+
+- **Access:** the screen needs the `VerBusquedasClientes` permission (the superadmin already has it; give it to other
+  roles in Settings → Roles). The Admin API query `reporteBusquedas` enforces it; it does not exist in the Shop API.
+
+- **When:** only a search that *settled* (about 1.5 s unchanged on screen, or the customer left the page), not every letter
+  typed. The storefront sends it with `navigator.sendBeacon` to `/api/search-log`, which calls the Shop API mutation
+  `registrarBusqueda`.
+- **Who:** logged-in customers are linked to their account (`customerId`); everyone else gets a random id in a first-party
+  cookie (`alegria_vid`, HttpOnly, 180 days). **The IP is not stored** (it is a poor identifier, shared by many people and
+  changing on phones, and more sensitive to keep). The cookie and this log should be mentioned in the privacy notice.
+- **What is dropped:** searches that look like personal data (emails, phone or card numbers, URLs), a single letter,
+  crawlers, repeats of the same search by the same visitor within 30 s, and more than 30 searches per visitor per minute.
+- **Protection:** the mutation requires the shared secret `SEARCH_LOG_SECRET` (same value in the server and the
+  storefront, header `x-search-log-key`), so nobody can fill the table from the internet. Without it nothing is
+  recorded. Set it in `.env.prod`: `openssl rand -hex 24`.
+- **Retention:** a daily scheduled task (`limpiar-registro-busquedas`, 03:30, worker) deletes searches older than
+  `SEARCH_LOG_RETENTION_DAYS` (365 by default).
+- What turns up in the zero-result list goes into synonyms (`search-text.ts`) or into
+  `consultas-de-oro.ts` with what the customer expected to find.
+
 ## Production Build
 
 Build all packages:

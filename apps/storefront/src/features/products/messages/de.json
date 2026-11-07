@@ -18,6 +18,8 @@
     "decreaseQuantity": "Eins entfernen",
     "inCart": "{count} im Warenkorb",
     "sku": "Art.-Nr.: {sku}",
+    "boxSavingsFromPiece": "Mit dem Karton mit {pieces} Stück sparen Sie <b>{saving}</b> ({percent} %): Jedes Stück kostet {perPiece} statt {piecePrice}.",
+    "boxSavingsFromBox": "Sie sparen <b>{saving}</b> ({percent} %) gegenüber dem Kauf von {pieces} einzelnen Stücken: Jedes Stück kostet {perPiece} statt {piecePrice}.",
     "from": "Ab",
     "noImage": "Kein Bild",
     "featuredProducts": "Empfohlene Produkte",

@@ -2,6 +2,7 @@ import {ResultOf} from '@/platform/vendure/graphql';
 import {ProductCard} from './components/product-card';
 import {Pagination} from './components/pagination';
 import {SortDropdown} from '@/features/search/sort-dropdown';
+import {SearchLogger} from '@/features/search/search-logger';
 import {SearchProductsQuery} from '@/features/search/graphql';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {getTranslations} from 'next-intl/server';
@@ -13,9 +14,11 @@ interface ProductGridProps {
     }>;
     currentPage: number;
     take: number;
+    /** Término buscado, si lo hay: se registra qué buscó el cliente y cuántos productos salieron. */
+    term?: string;
 }
 
-export async function ProductGrid({productDataPromise, currentPage, take}: ProductGridProps) {
+export async function ProductGrid({productDataPromise, currentPage, take, term}: ProductGridProps) {
     const locale = await getRouteLocale();
     const t = await getTranslations({locale, namespace: 'Product'});
     const result = await productDataPromise;
@@ -27,12 +30,14 @@ export async function ProductGrid({productDataPromise, currentPage, take}: Produ
         return (
             <div className="text-center py-12">
                 <p className="text-muted-foreground">{t('noProductsFound')}</p>
+                {term && <SearchLogger term={term} total={0}/>}
             </div>
         );
     }
 
     return (
         <div className="space-y-8">
+            {term && <SearchLogger term={term} total={searchResult.totalItems}/>}
             <div className="flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
                     {t('productCount', {count: searchResult.totalItems})}
@@ -40,7 +45,7 @@ export async function ProductGrid({productDataPromise, currentPage, take}: Produ
                 <SortDropdown/>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {searchResult.items.map((product, i) => (
                     <ProductCard key={'product-grid-item' + i} product={product}/>
                 ))}

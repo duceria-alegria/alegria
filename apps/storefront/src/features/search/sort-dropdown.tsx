@@ -18,19 +18,27 @@ export function SortDropdown() {
     const searchParams = useSearchParams();
     const router = useRouter();
 
+    // La relevancia solo existe al buscar un término; es el orden por defecto en ese caso.
+    const hasTerm = Boolean(searchParams.get('q')?.trim());
     const sortOptions = [
+        ...(hasTerm ? [{value: 'relevance', label: t('relevance')}] : []),
         {value: 'name-asc', label: t('nameAsc')},
         {value: 'name-desc', label: t('nameDesc')},
         {value: 'price-asc', label: t('priceAsc')},
         {value: 'price-desc', label: t('priceDesc')},
     ];
 
-    const currentSort = searchParams.get('sort') || 'name-asc';
+    const sortParam = searchParams.get('sort');
+    const currentSort = sortParam && sortParam !== 'relevance' ? sortParam : hasTerm ? 'relevance' : 'name-asc';
 
     const handleSortChange = (value: string | null) => {
         if (!value) return;
         const params = new URLSearchParams(searchParams);
-        params.set('sort', value);
+        if (value === 'relevance') {
+            params.delete('sort');
+        } else {
+            params.set('sort', value);
+        }
         params.delete('page'); // Reset to page 1 when sort changes
         router.push(`${pathname}?${params.toString()}`);
     };

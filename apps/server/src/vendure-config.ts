@@ -20,6 +20,11 @@ import { confirmacionPedidoHandler } from './plugins/flujo-bodega/correo-confirm
 import { FlujoBodegaPlugin } from './plugins/flujo-bodega/flujo-bodega.plugin';
 import { ResendEmailSender } from './plugins/email/resend-email-sender';
 import { PreciosPorListaPlugin } from './plugins/precios-por-lista/precios-por-lista.plugin';
+import { BusquedaProductosPlugin } from './plugins/busqueda-productos/busqueda-productos.plugin';
+import { BusquedaProductosStrategy } from './plugins/busqueda-productos/busqueda-productos.strategy';
+
+// Opciones de DefaultSearchPlugin; la estrategia propia necesita las mismas para armar su consulta.
+const SEARCH_OPTIONS = { bufferUpdates: false, indexStockStatus: true };
 
 const IS_DEV = process.env.APP_ENV === 'dev';
 // PORT wins because hosting platforms inject it into the environment at runtime, and that
@@ -103,7 +108,12 @@ export const config: VendureConfig = {
         }),
         DefaultSchedulerPlugin.init(),
         DefaultJobQueuePlugin.init({ useDatabaseForBuffer: true }),
-        DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: true }),
+        BusquedaProductosPlugin.init({
+            // Secreto compartido con la tienda para registrar las búsquedas de los clientes. Sin él no se registra nada.
+            searchLogSecret: process.env.SEARCH_LOG_SECRET?.trim() || undefined,
+            searchLogRetentionDays: Number(process.env.SEARCH_LOG_RETENTION_DAYS) || undefined,
+        }),
+        DefaultSearchPlugin.init({ ...SEARCH_OPTIONS, searchStrategy: new BusquedaProductosStrategy(SEARCH_OPTIONS) }),
         EmailPlugin.init({
             // Con RESEND_API_KEY todos los correos (pedidos, verificación,
             // reset, etc.) salen por la API de Resend. Sin ella se conserva

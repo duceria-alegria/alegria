@@ -38,6 +38,9 @@ x-server-env: &server-env
     CORS_ORIGINS: ${CORS_ORIGINS:-}
     RESEND_API_KEY: ${RESEND_API_KEY:-}
     EMAIL_FROM_ADDRESS: ${EMAIL_FROM_ADDRESS:-}
+    # Registro de lo que buscan los clientes: sin SEARCH_LOG_SECRET no se registra nada.
+    SEARCH_LOG_SECRET: ${SEARCH_LOG_SECRET:-}
+    SEARCH_LOG_RETENTION_DAYS: ${SEARCH_LOG_RETENTION_DAYS:-}
     DB_HOST: postgres
     DB_PORT: 5432
     DB_NAME: ${DB_NAME:-vendure}
@@ -127,6 +130,8 @@ services:
             VENDURE_SHOP_API_URL: http://server:3000/shop-api
             # Solo si configuras el webhook de revalidación (POST /api/revalidate); sin esto responde 500.
             REVALIDATION_SECRET: ${REVALIDATION_SECRET:-}
+            # Mismo valor que en el server: con él la tienda registra lo que buscan los clientes.
+            SEARCH_LOG_SECRET: ${SEARCH_LOG_SECRET:-}
         ports:
             - '${STOREFRONT_BIND:-127.0.0.1}:${STOREFRONT_PORT:-3002}:3000'
         # Red `proxy` compartida con cloudflared: el túnel llega a http://storefront:3000.

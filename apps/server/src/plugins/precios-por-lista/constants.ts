@@ -10,6 +10,15 @@ export const CAMPO_PRECIO_VARIANTE: Record<Exclude<ListaPrecios, 'menudeo'>, str
     mayoreo3: 'precioMayoreo3',
 };
 
+/** Campo personalizado de ProductVariant: si tiene valor, la variante es una caja con esas piezas. */
+export const CAMPO_PIEZAS_POR_CAJA = 'piezasPorCaja';
+
 export function esListaPrecios(value: unknown): value is ListaPrecios {
     return LISTAS_PRECIOS.includes(value as ListaPrecios);
+}
+
+/** Una variante es una caja cuando tiene definidas las piezas que trae. */
+export function esCaja(variante: { customFields?: unknown }): boolean {
+    const piezas = (variante.customFields as Record<string, unknown> | undefined)?.[CAMPO_PIEZAS_POR_CAJA];
+    return typeof piezas === 'number' && piezas > 0;
 }

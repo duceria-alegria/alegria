@@ -1,5 +1,6 @@
 {
   "Sort": {
+    "relevance": "Relevancia",
     "nameAsc": "Nombre: de la A a la Z",
     "nameDesc": "Nombre: de la Z a la A",
     "priceAsc": "Precio: de menor a mayor",
@@ -14,6 +15,10 @@
   "Search": {
     "title": "Buscar",
     "pageTitle": "Buscar productos",
+    "searchLabel": "Buscar en la tienda",
+    "searchPlaceholder": "Buscar en la tienda…",
+    "clearSearch": "Borrar búsqueda",
+    "searching": "Buscando…",
     "resultsFor": "Resultados de búsqueda para \"{query}\"",
     "resultsTitle": "Resultados de búsqueda para \"{query}\"",
     "metaDescription": "Encuentra productos que coincidan con \"{query}\" en {siteName}",

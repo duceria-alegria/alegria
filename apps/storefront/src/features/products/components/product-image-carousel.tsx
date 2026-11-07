@@ -35,7 +35,7 @@ export function ProductImageCarousel({ images }: ProductImageCarouselProps) {
     return (
         <div className="space-y-4">
             {/* Main Image */}
-            <div className="relative aspect-square bg-muted rounded-xl overflow-hidden group cursor-crosshair">
+            <div className="relative aspect-square bg-muted rounded-xl overflow-hidden group cursor-crosshair shadow-lg">
                 <Image
                     src={images[currentIndex].source}
                     alt={`Product image ${currentIndex + 1}`}

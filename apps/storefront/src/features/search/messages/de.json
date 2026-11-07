@@ -1,5 +1,6 @@
 {
   "Sort": {
+    "relevance": "Relevanz",
     "nameAsc": "Name: A bis Z",
     "nameDesc": "Name: Z bis A",
     "priceAsc": "Preis: Niedrig bis Hoch",
@@ -14,6 +15,10 @@
   "Search": {
     "title": "Suche",
     "pageTitle": "Produkte suchen",
+    "searchLabel": "Im Shop suchen",
+    "searchPlaceholder": "Im Shop suchen…",
+    "clearSearch": "Suche löschen",
+    "searching": "Suche läuft…",
     "resultsFor": "Suchergebnisse für \"{query}\"",
     "resultsTitle": "Suchergebnisse für \"{query}\"",
     "metaDescription": "Produkte für \"{query}\" bei {siteName} finden",

@@ -11,7 +11,10 @@ type ProductDetail = NonNullable<ResultOf<typeof GetProductDetailQuery>['product
  * price, no stock status, and a permanently disabled add-to-cart.
  *
  * This returns the option groups reduced to the options actually used by one of
- * the product's variants, dropping any group left with no options.
+ * the product's variants, dropping any group left with fewer than two options:
+ * with a single option there is nothing to choose. That happens for retail
+ * shoppers, who never get the wholesale-only "Caja" variant, so "Presentación"
+ * is left with just "Pieza".
  */
 export function getDisplayOptionGroups(product: ProductDetail): ProductDetail['optionGroups'] {
     const usedOptionIds = new Set(
@@ -23,5 +26,5 @@ export function getDisplayOptionGroups(product: ProductDetail): ProductDetail['o
             ...group,
             options: group.options.filter((option) => usedOptionIds.has(option.id)),
         }))
-        .filter((group) => group.options.length > 0);
+        .filter((group) => group.options.length > 1);
 }

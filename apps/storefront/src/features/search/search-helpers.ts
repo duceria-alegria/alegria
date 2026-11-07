@@ -17,8 +17,11 @@ export function buildSearchInput({ searchParams, collectionSlug }: BuildSearchIn
     const page = Number(searchParams.page) || 1;
     const take = 12;
     const skip = (page - 1) * take;
-    const sort = (searchParams.sort as string) || 'name-asc';
     const searchTerm = searchParams.q as string;
+    const hasTerm = typeof searchTerm === 'string' && searchTerm.trim().length > 0;
+    const requestedSort = searchParams.sort as string | undefined;
+    // Con un término y sin orden elegido el servidor ordena por relevancia (le basta un `sort` vacío).
+    const sort = requestedSort && requestedSort !== 'relevance' ? requestedSort : hasTerm ? 'relevance' : 'name-asc';
 
     // Extract facet value IDs from search params
     const facetValueIds = searchParams.facets
@@ -29,6 +32,7 @@ export function buildSearchInput({ searchParams, collectionSlug }: BuildSearchIn
 
     // Map sort parameter to Vendure SearchResultSortParameter
     const sortMapping: Record<string, { name?: 'ASC' | 'DESC'; price?: 'ASC' | 'DESC' }> = {
+        relevance: {},
         'name-asc': { name: 'ASC' },
         'name-desc': { name: 'DESC' },
         'price-asc': { price: 'ASC' },
