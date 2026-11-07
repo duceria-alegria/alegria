@@ -5,7 +5,7 @@ export function ProductGridSkeleton() {
                 <div className="h-5 w-32 bg-muted animate-pulse rounded" />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
                 {Array.from({ length: 12 }).map((_, i) => (
                     <div key={i} className="bg-card rounded-lg overflow-hidden border border-border">
                         <div className="aspect-square bg-muted animate-pulse" />

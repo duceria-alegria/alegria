@@ -45,7 +45,7 @@ export async function ProductGrid({productDataPromise, currentPage, take, term}:
                 <SortDropdown/>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
                 {searchResult.items.map((product, i) => (
                     <ProductCard key={'product-grid-item' + i} product={product}/>
                 ))}
