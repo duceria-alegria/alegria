@@ -62,7 +62,8 @@ export function ProductCardCartControl({variantId}: ProductCardCartControlProps)
     }
 
     return (
-        <div className="relative z-10 flex shrink-0 items-center gap-1.5 rounded-full bg-brand-yellow-soft p-1">
+        // grow + parent flex-wrap: on narrow cards the stepper drops under the price and spans the full width.
+        <div className="relative z-10 flex grow items-center justify-between gap-1.5 rounded-full bg-brand-yellow-soft p-1">
             <button
                 type="button"
                 aria-label={cartLine.quantity <= 1 ? t('removeFromCart') : t('decreaseQuantity')}

@@ -69,7 +69,7 @@ export function ProductCard({product: productProp, preload, className}: ProductC
                         {product.productName}
                     </Link>
                 </h3>
-                <div className="mt-2 flex items-center justify-between gap-2">
+                <div className="mt-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-2">
                     <Suspense fallback={<div className="h-7 w-20 rounded bg-muted"></div>}>
                         <p className="font-display text-lg font-extrabold">
                             {product.priceWithTax.__typename === 'PriceRange' ? (
