@@ -1,10 +1,7 @@
-import {Suspense} from "react";
+import {cache} from 'react';
 import {getRouteLocale} from "@/platform/i18n/server";
 import {getActiveCurrencyCode} from '@/features/currency/currency-server';
 import {FacetFilters} from '@/features/search/facet-filters';
-import {SearchBox} from '@/features/search/search-box';
-import {SearchPendingArea, SearchPendingProvider} from '@/features/search/search-pending';
-import {ProductGridSkeleton} from '@/features/products/product-grid-skeleton';
 import {ProductGrid} from '@/features/products/product-grid';
 import {buildSearchInput, getCurrentPage} from "@/features/search/search-helpers";
 import {query} from "@/platform/vendure/api";
@@ -18,37 +15,28 @@ interface SearchResultsProps {
     }>
 }
 
-export async function SearchResults({searchParams}: SearchResultsProps) {
+// Filters and grid render in separate Suspense boundaries but share one request. `cache` dedupes it
+// per render, keyed on the (same) searchParams promise both receive from the page.
+const getSearchData = cache(async (searchParams: SearchResultsProps['searchParams']) => {
     const searchParamsResolved = await searchParams;
     const locale = await getRouteLocale();
     const currencyCode = await getActiveCurrencyCode();
-    const page = getCurrentPage(searchParamsResolved);
-
     const pricingToken = await getPricingToken();
-    const productDataPromise = query(SearchProductsQuery, {
+    return query(SearchProductsQuery, {
         input: buildSearchInput({searchParams: searchParamsResolved})
     }, {languageCode: locale, currencyCode, token: pricingToken});
+});
 
+export async function SearchFacets({searchParams}: SearchResultsProps) {
+    return <FacetFilters productDataPromise={getSearchData(searchParams)}/>;
+}
+
+export async function SearchProducts({searchParams}: SearchResultsProps) {
+    const searchParamsResolved = await searchParams;
+    const term = typeof searchParamsResolved.q === 'string' ? searchParamsResolved.q.trim() : undefined;
 
     return (
-        <SearchPendingProvider>
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                {/* Search + filters sidebar (stacks above the grid on mobile) */}
-                <aside className="space-y-6 lg:col-span-1">
-                    <SearchBox/>
-                    <Suspense fallback={<div className="h-64 animate-pulse bg-muted rounded-lg"/>}>
-                        <FacetFilters productDataPromise={productDataPromise}/>
-                    </Suspense>
-                </aside>
-
-                {/* Product Grid (dimmed while a new search loads) */}
-                <SearchPendingArea className="lg:col-span-3">
-                    <Suspense fallback={<ProductGridSkeleton/>}>
-                        <ProductGrid productDataPromise={productDataPromise} currentPage={page} take={12}
-                                     term={typeof searchParamsResolved.q === 'string' ? searchParamsResolved.q.trim() : undefined}/>
-                    </Suspense>
-                </SearchPendingArea>
-            </div>
-        </SearchPendingProvider>
-    )
+        <ProductGrid productDataPromise={getSearchData(searchParams)}
+                     currentPage={getCurrentPage(searchParamsResolved)} take={12} term={term}/>
+    );
 }
