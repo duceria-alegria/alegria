@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { NO_IMAGE_SRC } from '@/lib/no-image';
 import { Link } from '@/platform/i18n/navigation';
 import {Button} from '@/components/ui/button';
 import {Minus, Plus, X} from 'lucide-react';
@@ -52,20 +53,18 @@ export async function CartItems({activeOrder}: { activeOrder: ActiveOrder | null
                     key={line.id}
                     className="flex flex-col sm:flex-row gap-3 p-3 rounded-2xl border border-border/70 bg-card shadow-card"
                 >
-                    {line.productVariant.product.featuredAsset && (
-                        <Link
-                            href={`/product/${line.productVariant.product.slug}`}
-                            className="flex-shrink-0"
-                        >
-                            <Image
-                                src={line.productVariant.product.featuredAsset.preview}
-                                alt={line.productVariant.name}
-                                width={88}
-                                height={88}
-                                className="rounded-xl object-cover w-full sm:w-[88px] h-[88px]"
-                            />
-                        </Link>
-                    )}
+                    <Link
+                        href={`/product/${line.productVariant.product.slug}`}
+                        className="flex-shrink-0"
+                    >
+                        <Image
+                            src={line.productVariant.product.featuredAsset?.preview ?? NO_IMAGE_SRC}
+                            alt={line.productVariant.name}
+                            width={88}
+                            height={88}
+                            className={`rounded-xl w-full sm:w-[88px] h-[88px] ${line.productVariant.product.featuredAsset ? 'object-cover' : 'object-contain bg-pastel-pink'}`}
+                        />
+                    </Link>
 
                     <div className="flex-grow min-w-0">
                         <Link

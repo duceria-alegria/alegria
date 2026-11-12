@@ -2,12 +2,12 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Link } from '@/platform/i18n/navigation';
 import { query } from '@/platform/vendure/api';
-import {SearchProductsQuery} from '@/features/search/graphql';
 import {GetCollectionProductsQuery} from '@/features/collections/graphql';
 import {ProductGrid} from '@/features/products/product-grid';
 import {FacetFilters} from '@/features/search/facet-filters';
 import {ProductGridSkeleton} from '@/features/products/product-grid-skeleton';
-import { buildSearchInput, getCurrentPage } from '@/features/search/search-helpers';
+import { getCurrentPage } from '@/features/search/search-helpers';
+import { searchWithFacetCatalog } from '@/features/search/search-data';
 import { cacheLife, cacheTag } from 'next/cache';
 import {
     Breadcrumb,
@@ -38,12 +38,11 @@ async function getCollectionProducts(slug: string, searchParams: { [key: string]
     cacheTag(`collection-${slug}-${locale}-${currencyCode}`);
     cacheTag('collection');
 
-    return query(SearchProductsQuery, {
-        input: buildSearchInput({
-            searchParams,
-            collectionSlug: slug
-        })
-    }, {languageCode: locale, currencyCode});
+    return searchWithFacetCatalog({
+        searchParams,
+        collectionSlug: slug,
+        requestOptions: {languageCode: locale, currencyCode},
+    });
 }
 
 async function getCollectionMetadata(slug: string) {
@@ -119,9 +118,11 @@ export default async function CollectionPage({params, searchParams}: PageProps<'
 
     const pricingToken = await getPricingToken();
     const productDataPromise = pricingToken
-        ? query(SearchProductsQuery, {
-            input: buildSearchInput({searchParams: searchParamsResolved, collectionSlug: slug})
-        }, {languageCode: locale, currencyCode, token: pricingToken})
+        ? searchWithFacetCatalog({
+            searchParams: searchParamsResolved,
+            collectionSlug: slug,
+            requestOptions: {languageCode: locale, currencyCode, token: pricingToken},
+        })
         : getCollectionProducts(slug, searchParamsResolved, currencyCode);
     const collectionResult = await getCollectionMetadata(slug);
     const collectionName = collectionResult.data.collection?.name ?? slug;

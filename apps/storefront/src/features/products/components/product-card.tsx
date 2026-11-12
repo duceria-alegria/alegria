@@ -7,6 +7,8 @@ import {Suspense} from "react";
 import { Link } from '@/platform/i18n/navigation';
 import {useTranslations} from 'next-intl';
 import {cn} from '@/lib/utils';
+import {NO_IMAGE_SRC} from '@/lib/no-image';
+import {ProductCardImages} from '@/features/products/components/product-card-images';
 import {ProductCardCartControl} from '@/features/products/components/product-card-cart-control';
 
 interface ProductCardProps {
@@ -38,25 +40,29 @@ export function ProductCard({product: productProp, preload, className}: ProductC
     const canQuickAdd = product.priceWithTax.__typename === 'SinglePrice'
         || (product.priceWithTax.__typename === 'PriceRange' && product.priceWithTax.min === product.priceWithTax.max);
 
+    // La principal va primero; si el índice aún no trae la lista, se usa solo ella.
+    const images = product.productAssets.length > 0
+        ? product.productAssets
+        : product.productAsset ? [product.productAsset] : [];
+
     return (
         <article
             className={cn(
-                "group relative flex flex-col rounded-2xl border border-border/70 bg-card p-2.5 shadow-card transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-card-hover motion-reduce:transition-none motion-reduce:hover:transform-none",
+                "group relative flex flex-col rounded-2xl border border-border/70 bg-card p-2.5 shadow-card transition-[transform,box-shadow] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:shadow-card-hover active:translate-y-0 active:duration-150 motion-reduce:transition-none motion-reduce:hover:transform-none",
                 className,
             )}
         >
             <div className={cn("relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl", imageBackgroundFor(product.productId))}>
-                {product.productAsset ? (
+                {images.length > 0 ? (
+                    <ProductCardImages images={images} preload={preload}/>
+                ) : (
                     <Image
-                        src={product.productAsset.preview}
-                        alt=""
+                        src={NO_IMAGE_SRC}
+                        alt={t('noImage')}
                         fill
-                        preload={preload}
-                        className="object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
+                        className="object-contain transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04] motion-reduce:transition-none"
                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                     />
-                ) : (
-                    <span className="text-sm font-semibold text-muted-foreground">{t('noImage')}</span>
                 )}
             </div>
             <div className="flex flex-col gap-1 px-1 pb-0.5 pt-2.5">
@@ -91,7 +97,7 @@ export function ProductCard({product: productProp, preload, className}: ProductC
                     ) : (
                         <span
                             aria-hidden="true"
-                            className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-yellow text-primary shadow-button transition-colors group-hover:bg-brand-yellow-deep"
+                            className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-yellow text-primary shadow-button transition-[background-color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105 group-hover:bg-brand-yellow-deep"
                         >
                             <Plus className="size-4" strokeWidth={2.4}/>
                         </span>

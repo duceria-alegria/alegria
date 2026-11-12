@@ -22,6 +22,8 @@
     "boxSavingsFromBox": "Ahorras <b>{saving}</b> ({percent}%) frente a comprar {pieces} piezas sueltas: cada pieza te sale en {perPiece} en lugar de {piecePrice}.",
     "from": "Desde",
     "noImage": "Sin imagen",
+    "previousImage": "Foto anterior",
+    "nextImage": "Foto siguiente",
     "featuredProducts": "Productos destacados",
     "relatedProducts": "Productos relacionados",
     "viewAllProducts": "Ver todos los productos",

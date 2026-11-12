@@ -67,7 +67,7 @@
   --color-pastel-blue: #dceefa;
 
   --shadow-card: 0 20px 25px -5px rgb(75 29 110 / 0.18), 0 8px 10px -6px rgb(75 29 110 / 0.14);
-  --shadow-card-hover: 0 25px 50px -12px rgb(75 29 110 / 0.35);
+  --shadow-card-hover: 0 24px 36px -8px rgb(75 29 110 / 0.26), 0 10px 14px -6px rgb(75 29 110 / 0.16);
   --shadow-tile: 0 10px 15px -3px rgb(75 29 110 / 0.16), 0 4px 6px -4px rgb(75 29 110 / 0.12);
   --shadow-tile-hover: 0 20px 25px -5px rgb(75 29 110 / 0.24);
   --shadow-button: 0 6px 10px -2px rgb(75 29 110 / 0.32), 0 3px 5px -3px rgb(75 29 110 / 0.24);
@@ -260,6 +260,80 @@
 
 @media (prefers-reduced-motion: reduce) {
   .hero-float {
+    animation: none;
+  }
+}
+
+/* Loading screen (site/loading-screen.tsx): orbs ride a ring around the logo; --a is each orb's start angle.
+   The base transform is the static layout, so reduced-motion users still get the orbs spread around the ring. */
+.loader-orb {
+  transform: translate(-50%, -50%) rotate(var(--a)) translateY(calc(var(--r) * -1)) rotate(calc(var(--a) * -1));
+  animation: loader-orbit 5s linear infinite;
+}
+
+@keyframes loader-orbit {
+  to {
+    transform: translate(-50%, -50%) rotate(calc(var(--a) + 360deg)) translateY(calc(var(--r) * -1)) rotate(calc((var(--a) + 360deg) * -1));
+  }
+}
+
+.loader-ring {
+  background: conic-gradient(var(--color-brand-pink), var(--color-brand-orange), var(--color-brand-yellow), var(--color-brand-cyan), var(--color-brand-blue), var(--color-brand-pink));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
+  animation: loader-spin 3.5s linear infinite;
+}
+
+@keyframes loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loader-logo {
+  animation: loader-bob 1.8s ease-in-out infinite;
+}
+
+@keyframes loader-bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg) scale(1);
+  }
+  50% {
+    transform: translateY(-9px) rotate(3deg) scale(1.05);
+  }
+}
+
+.loader-dot {
+  animation: loader-dot 1.1s ease-in-out infinite;
+}
+
+@keyframes loader-dot {
+  0%,
+  70%,
+  100% {
+    transform: translateY(0);
+  }
+  35% {
+    transform: translateY(-7px);
+  }
+}
+
+/* Fades in after a short beat so a fast navigation never flashes the screen. */
+.loader-appear {
+  animation: loader-appear 0.3s ease-out 0.2s both;
+}
+
+@keyframes loader-appear {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader-orb,
+  .loader-ring,
+  .loader-logo,
+  .loader-dot {
     animation: none;
   }
 }

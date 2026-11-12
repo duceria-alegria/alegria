@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { NO_IMAGE_SRC } from '@/lib/no-image';
 import { ChevronDown, ShoppingBag } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -17,21 +18,15 @@ function OrderSummaryContent({ order, t }: { order: ReturnType<typeof useCheckou
       <div className="space-y-3">
         {order.lines.map((line: OrderLine) => (
           <div key={line.id} className="flex gap-3">
-            {line.productVariant.product.featuredAsset ? (
-              <div className="flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden bg-muted">
-                <Image
-                  src={line.productVariant.product.featuredAsset.preview}
-                  alt={line.productVariant.name}
-                  width={56}
-                  height={56}
-                  className="object-cover w-full h-full"
-                />
-              </div>
-            ) : (
-              <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-muted flex items-center justify-center">
-                <ShoppingBag className="h-5 w-5 text-muted-foreground" />
-              </div>
-            )}
+            <div className="flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden bg-muted">
+              <Image
+                src={line.productVariant.product.featuredAsset?.preview ?? NO_IMAGE_SRC}
+                alt={line.productVariant.name}
+                width={56}
+                height={56}
+                className="object-cover w-full h-full"
+              />
+            </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium line-clamp-2">
                 {line.productVariant.product.name}

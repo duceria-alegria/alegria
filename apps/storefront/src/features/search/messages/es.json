@@ -10,6 +10,10 @@
   "Filters": {
     "title": "Filtros",
     "clearAll": "Borrar todo",
+    "selected": "Filtros seleccionados",
+    "removeAll": "Quitar todos",
+    "searchPlaceholder": "Buscar…",
+    "noMatches": "Sin resultados",
     "filtersButton": "Filtros"
   },
   "Search": {

@@ -1,5 +1,5 @@
 /**
- * Crea clientes de prueba, uno por lista de precios (menudeo, mayoreo 1, 2 y 3).
+ * Crea clientes de prueba, uno por lista de precios (menudeo y mayoreo 1 a 4).
  * Es idempotente: si el correo ya existe, se asegura de que tenga su lista asignada, la contraseña
  * de prueba y la cuenta verificada.
  *
@@ -28,6 +28,7 @@ const CLIENTES_PRUEBA: Array<{ emailAddress: string; firstName: string; lastName
     { emailAddress: 'mayoreo1@prueba.test', firstName: 'Cliente', lastName: 'Mayoreo 1', lista: 'mayoreo1' },
     { emailAddress: 'mayoreo2@prueba.test', firstName: 'Cliente', lastName: 'Mayoreo 2', lista: 'mayoreo2' },
     { emailAddress: 'mayoreo3@prueba.test', firstName: 'Cliente', lastName: 'Mayoreo 3', lista: 'mayoreo3' },
+    { emailAddress: 'mayoreo4@prueba.test', firstName: 'Cliente', lastName: 'Mayoreo 4', lista: 'mayoreo4' },
 ];
 
 async function main() {

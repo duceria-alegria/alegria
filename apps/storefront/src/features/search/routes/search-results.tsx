@@ -3,9 +3,8 @@ import {getRouteLocale} from "@/platform/i18n/server";
 import {getActiveCurrencyCode} from '@/features/currency/currency-server';
 import {FacetFilters} from '@/features/search/facet-filters';
 import {ProductGrid} from '@/features/products/product-grid';
-import {buildSearchInput, getCurrentPage} from "@/features/search/search-helpers";
-import {query} from "@/platform/vendure/api";
-import {SearchProductsQuery} from '@/features/search/graphql';
+import {getCurrentPage} from "@/features/search/search-helpers";
+import {searchWithFacetCatalog} from "@/features/search/search-data";
 import {getPricingToken} from '@/features/pricing/pricing-token';
 
 interface SearchResultsProps {
@@ -22,9 +21,10 @@ const getSearchData = cache(async (searchParams: SearchResultsProps['searchParam
     const locale = await getRouteLocale();
     const currencyCode = await getActiveCurrencyCode();
     const pricingToken = await getPricingToken();
-    return query(SearchProductsQuery, {
-        input: buildSearchInput({searchParams: searchParamsResolved})
-    }, {languageCode: locale, currencyCode, token: pricingToken});
+    return searchWithFacetCatalog({
+        searchParams: searchParamsResolved,
+        requestOptions: {languageCode: locale, currencyCode, token: pricingToken},
+    });
 });
 
 export async function SearchFacets({searchParams}: SearchResultsProps) {

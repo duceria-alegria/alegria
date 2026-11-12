@@ -48,6 +48,23 @@ Use these credentials to log in to the Vendure Dashboard:
 - **Username**: superadmin
 - **Password**: superadmin
 
+## Price lists and catalog import
+
+Every customer has a price list (**Lista de precios** on the customer, set in the Dashboard). The five lists match the
+owner's price list (Precio 1-5): `menudeo` = **Lista** (the variant price; visitors also see it), `mayoreo1` =
+**Mayoreo**, `mayoreo2` = **Medio mayoreo**, `mayoreo3` = **Super mayoreo**, `mayoreo4` = **Mínimo** (custom fields
+`precioMayoreo1`-`4` on the variant). An empty wholesale price falls back to Lista.
+
+The real catalog is loaded from the owner's spreadsheet with `apps/server/src/importar-productos.ts` (JSON input with
+one object per article; see the header of the file). It creates one single-variant product per article, keyed by SKU
+(the article code), so running it again updates prices instead of duplicating products. A wholesale price that is
+empty, 0 or below half of Lista is not loaded, and an article with Lista 0 is created disabled; everything adjusted is
+written to `<input>.ajustes.csv`.
+
+```bash
+npx ts-node src/importar-productos.ts productos.json   # from apps/server
+```
+
 ## Selling by box and by piece (wholesale)
 
 A product is sold as **Pieza** and **Caja** with two variants that share an option group "Presentación":
@@ -55,13 +72,14 @@ A product is sold as **Pieza** and **Caja** with two variants that share an opti
 1. In the Dashboard create the option group "Presentación" with the options "Pieza" and "Caja" and add it to the product.
 2. Create one variant per option. On the **Caja** variant fill in **Piezas por caja** (2 or more): that field is what
    marks a variant as a box. Leave it empty on **Pieza**.
-3. Set the retail price (the variant price) and the three wholesale prices (**Precio mayoreo 1-3**) on both variants.
+3. Set the retail price (the variant price, **Lista**) and the four wholesale prices (**Precio Mayoreo**, **Precio Medio
+   mayoreo**, **Precio Super mayoreo**, **Precio Mínimo**) on both variants.
    Keep the price per piece of the box (box price ÷ pieces) **lower** than the Pieza price in every list, otherwise loose
    pieces are cheaper than the box. The system does not check this.
 4. Stock is separate: each variant has its own, closed boxes on one side and loose pieces on the other. When a box is
    opened, adjust both (−1 Caja, +N Pieza).
 
-Boxes are only visible and purchasable for wholesale customers (Mayoreo 1-3). Visitors and retail customers only see
+Boxes are only visible and purchasable for wholesale customers (lists `mayoreo1`-`mayoreo4`). Visitors and retail customers only see
 Pieza, and the Shop API refuses to add a Caja to their cart. A customer who wants 24 pieces with 20-piece boxes adds
 1 Caja + 4 Piezas (two cart lines). The code lives in `apps/server/src/plugins/precios-por-lista`.
 

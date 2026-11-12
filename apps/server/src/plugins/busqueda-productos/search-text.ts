@@ -19,7 +19,7 @@ export function normalizeSearchText(value: unknown): string {
  * servidor reconstruye solo los documentos guardados con otra versión (no hace falta correr nada a
  * mano, tampoco en producción).
  */
-export const SEARCH_TEXT_VERSION = 1;
+export const SEARCH_TEXT_VERSION = 2;
 
 /**
  * Clave fonética en español: colapsa las letras que suenan igual para que "lukas" coincida con
@@ -65,6 +65,9 @@ export const SYNONYM_GROUPS: ReadonlyArray<readonly string[]> = [
     ['tamarindo', 'tamarind'],
     ['cacahuate', 'cacahuates', 'mani'],
     ['chocolate', 'chocolates', 'choco'],
+    // Chocolates Nugs (De la Rosa) mal escritos, pedido del usuario 2026-11-12. "nugz" ya coincide por
+    // sonido (z = s); "nucs"/"nuqs" también suenan como "nuks", pero sin el grupo "nucs" traía NUCITA.
+    ['nugs', 'nucs', 'nuks', 'nuqs', 'nucks', 'nux', 'nuggs', 'nungs', 'nugts'],
 ];
 
 /**

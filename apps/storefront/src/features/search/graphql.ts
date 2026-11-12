@@ -29,3 +29,23 @@ export const SearchProductsQuery = graphql(`
         }
     }
 `, [ProductCardFragment]);
+
+// Todos los valores de filtro de una búsqueda/colección SIN aplicar los filtros elegidos, para poder
+// seguir mostrando las opciones no marcadas (Vendure solo devuelve las que quedan en el resultado filtrado).
+export const SearchFacetValuesQuery = graphql(`
+    query SearchFacetValues($input: SearchInput!) {
+        search(input: $input) {
+            facetValues {
+                count
+                facetValue {
+                    id
+                    name
+                    facet {
+                        id
+                        name
+                    }
+                }
+            }
+        }
+    }
+`);

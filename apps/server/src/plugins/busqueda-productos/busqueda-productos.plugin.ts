@@ -4,6 +4,7 @@ import { BUSQUEDA_OPTIONS, BusquedaProductosOptions, verBusquedasClientes } from
 import { ProductSearchDocument } from './product-search-document.entity';
 import { ProductSearchDocumentService } from './product-search-document.service';
 import { SearchLog } from './search-log.entity';
+import { SearchResultAssetsResolver } from './search-result-assets.resolver';
 import { SearchLogAdminResolver } from './search-log-admin.resolver';
 import { SearchLogResolver } from './search-log.resolver';
 import { SearchLogService } from './search-log.service';
@@ -13,6 +14,11 @@ const shopApiSchema = gql`
         term: String!
         resultCount: Int!
         visitorId: String!
+    }
+
+    extend type SearchResult {
+        "Fotos del producto en su orden (la principal primero), para el carrusel de la tarjeta."
+        productAssets: [SearchResultAsset!]!
     }
 
     extend type Mutation {
@@ -93,7 +99,7 @@ const limpiarBusquedasTask = new ScheduledTask({
         SearchLogService,
         { provide: BUSQUEDA_OPTIONS, useFactory: () => BusquedaProductosPlugin.options },
     ],
-    shopApiExtensions: { schema: shopApiSchema, resolvers: [SearchLogResolver] },
+    shopApiExtensions: { schema: shopApiSchema, resolvers: [SearchLogResolver, SearchResultAssetsResolver] },
     adminApiExtensions: { schema: adminApiSchema, resolvers: [SearchLogAdminResolver] },
     configuration: config => {
         config.schedulerOptions.tasks = [...(config.schedulerOptions.tasks ?? []), limpiarBusquedasTask];
