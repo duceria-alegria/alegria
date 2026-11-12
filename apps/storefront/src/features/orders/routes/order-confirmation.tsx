@@ -3,6 +3,7 @@ import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {Check, ShoppingBag, ClipboardList} from 'lucide-react';
 import { Link } from '@/platform/i18n/navigation';
 import Image from 'next/image';
+import { NO_IMAGE_SRC } from '@/lib/no-image';
 import {Separator} from '@/components/ui/separator';
 import {Price} from '@/features/pricing/price';
 import {notFound} from 'next/navigation';
@@ -102,17 +103,15 @@ export async function OrderConfirmation({paramsPromise}: OrderConfirmationProps)
                     <CardContent className="space-y-4">
                         {order.lines.map((line) => (
                             <div key={line.id} className="flex gap-4 items-center">
-                                {line.productVariant.product.featuredAsset && (
-                                    <div className="flex-shrink-0">
-                                        <Image
-                                            src={line.productVariant.product.featuredAsset.preview}
-                                            alt={line.productVariant.name}
-                                            width={80}
-                                            height={80}
-                                            className="rounded-lg object-cover h-20 w-20 object-center"
-                                        />
-                                    </div>
-                                )}
+                                <div className="flex-shrink-0">
+                                    <Image
+                                        src={line.productVariant.product.featuredAsset?.preview ?? NO_IMAGE_SRC}
+                                        alt={line.productVariant.name}
+                                        width={80}
+                                        height={80}
+                                        className="rounded-lg object-cover h-20 w-20 object-center"
+                                    />
+                                </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="font-medium">{line.productVariant.product.name}</p>
                                     {line.productVariant.name !== line.productVariant.product.name && (

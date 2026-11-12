@@ -5,15 +5,36 @@ export interface SearchInputParams {
     skip: number;
     groupByProduct: boolean;
     sort: { name?: 'ASC' | 'DESC'; price?: 'ASC' | 'DESC' };
-    facetValueFilters?: Array<{ and: string }>;
+    facetValueFilters?: Array<{ and: string } | { or: string[] }>;
 }
 
 interface BuildSearchInputOptions {
     searchParams: { [key: string]: string | string[] | undefined };
     collectionSlug?: string;
+    /** id de valor de filtro → id de su filtro (facet). Con esto los valores de un mismo filtro se suman (OR). */
+    facetOf?: Record<string, string>;
 }
 
-export function buildSearchInput({ searchParams, collectionSlug }: BuildSearchInputOptions): SearchInputParams {
+// Dentro de un mismo filtro (p. ej. Línea) los valores elegidos se suman; entre filtros distintos se cruzan.
+// Sin saber a qué filtro pertenece cada valor se mantiene el cruce estricto de antes.
+function buildFacetValueFilters(ids: string[], facetOf?: Record<string, string>) {
+    const groups = new Map<string, string[]>();
+    const filters: Array<{ and: string } | { or: string[] }> = [];
+    for (const id of ids) {
+        const facetId = facetOf?.[id];
+        if (!facetId) {
+            filters.push({ and: id });
+            continue;
+        }
+        groups.set(facetId, [...(groups.get(facetId) ?? []), id]);
+    }
+    for (const group of groups.values()) {
+        filters.push(group.length === 1 ? { and: group[0] } : { or: group });
+    }
+    return filters;
+}
+
+export function buildSearchInput({ searchParams, collectionSlug, facetOf }: BuildSearchInputOptions): SearchInputParams {
     const page = Number(searchParams.page) || 1;
     const take = 12;
     const skip = (page - 1) * take;
@@ -47,7 +68,7 @@ export function buildSearchInput({ searchParams, collectionSlug }: BuildSearchIn
         groupByProduct: true,
         sort: sortMapping[sort] || sortMapping['name-asc'],
         ...(facetValueIds.length > 0 && {
-            facetValueFilters: facetValueIds.map(id => ({ and: id }))
+            facetValueFilters: buildFacetValueFilters(facetValueIds, facetOf)
         })
     };
 }

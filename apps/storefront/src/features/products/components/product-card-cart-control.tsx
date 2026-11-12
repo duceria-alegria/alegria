@@ -54,7 +54,7 @@ export function ProductCardCartControl({variantId}: ProductCardCartControlProps)
                 aria-label={t('addToCart')}
                 disabled={isPending}
                 onClick={handleAdd}
-                className="relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-yellow text-primary shadow-button transition-colors hover:bg-brand-yellow-deep group-hover:bg-brand-yellow-deep disabled:pointer-events-none disabled:opacity-60"
+                className="relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-yellow text-primary shadow-button transition-[background-color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-brand-yellow-deep group-hover:scale-105 group-hover:bg-brand-yellow-deep active:scale-95 disabled:pointer-events-none disabled:opacity-60"
             >
                 <Plus className="size-4" strokeWidth={2.4}/>
             </button>

@@ -22,6 +22,8 @@
     "boxSavingsFromBox": "You save <b>{saving}</b> ({percent}%) compared to buying {pieces} loose pieces: each piece costs {perPiece} instead of {piecePrice}.",
     "from": "From",
     "noImage": "No image",
+    "previousImage": "Previous photo",
+    "nextImage": "Next photo",
     "featuredProducts": "Featured Products",
     "relatedProducts": "Related Products",
     "viewAllProducts": "View All Products",

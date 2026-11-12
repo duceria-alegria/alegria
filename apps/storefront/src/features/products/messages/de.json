@@ -22,6 +22,8 @@
     "boxSavingsFromBox": "Sie sparen <b>{saving}</b> ({percent} %) gegenüber dem Kauf von {pieces} einzelnen Stücken: Jedes Stück kostet {perPiece} statt {piecePrice}.",
     "from": "Ab",
     "noImage": "Kein Bild",
+    "previousImage": "Vorheriges Foto",
+    "nextImage": "Nächstes Foto",
     "featuredProducts": "Empfohlene Produkte",
     "relatedProducts": "Ähnliche Produkte",
     "viewAllProducts": "Alle Produkte anzeigen",

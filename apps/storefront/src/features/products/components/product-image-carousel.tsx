@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { NO_IMAGE_SRC } from '@/lib/no-image';
 
 interface ProductImageCarouselProps {
     images: Array<{
@@ -18,8 +19,15 @@ export function ProductImageCarousel({ images }: ProductImageCarouselProps) {
 
     if (!images || images.length === 0) {
         return (
-            <div className="aspect-square bg-muted rounded-xl flex items-center justify-center">
-                <span className="text-muted-foreground">No images available</span>
+            <div className="relative aspect-square bg-pastel-pink rounded-xl overflow-hidden">
+                <Image
+                    src={NO_IMAGE_SRC}
+                    alt="Imagen no disponible"
+                    fill
+                    className="object-contain"
+                    sizes="(max-width: 1024px) 67vw, 33vw"
+                    priority
+                />
             </div>
         );
     }

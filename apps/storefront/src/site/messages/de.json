@@ -15,5 +15,9 @@
     "account": "Konto",
     "contact": "Kontakt",
     "copyright": "Dulcería Alegría. Alle Rechte vorbehalten."
+  },
+  "Loading": {
+    "title": "Lädt…",
+    "description": "Wird geladen, einen Moment bitte"
   }
 }
