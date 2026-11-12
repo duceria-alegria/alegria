@@ -49,6 +49,9 @@ export const CONSULTAS_DE_ORO: Array<ConsultaDeOro & { grupo: string }> = [
         { label: 'gomitas encuentra "goma"', q: 'gomitas', include: ['pica goma'] },
         { label: 'gomita (singular)', q: 'gomita', include: ['pica goma'] },
         { label: 'picante encuentra la línea "pica"', q: 'picante', total: 3, exclude: ['skittles'] },
+        { label: 'nucs (mal escrito) encuentra Nugs antes que Nucita', q: 'nucs', first: 'nugs' },
+        { label: 'nuks (mal escrito) encuentra Nugs', q: 'nuks', first: 'nugs' },
+        { label: 'nux (mal escrito) encuentra Nugs', q: 'nux', first: 'nugs' },
     ]),
 
     ...grupo('Presentación (números)', [
