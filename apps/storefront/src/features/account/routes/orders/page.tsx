@@ -64,7 +64,7 @@ export default async function OrdersPage(props: PageProps<'/[locale]/account/ord
     const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
     return (
-        <div>
+        <div data-account-wide>
             <LiveOrderUpdates/>
             <h1 className="text-3xl font-bold mb-6">{t('myOrders')}</h1>
 
