@@ -1,7 +1,7 @@
 import { LanguageCode, Permission, PluginCommonModule, VendurePlugin } from '@vendure/core';
 import { CajasInterceptor } from './cajas.interceptor';
 import { CajasService } from './cajas.service';
-import { CAMPO_PIEZAS_POR_CAJA, CAMPO_PRECIO_VARIANTE, LISTA_POR_DEFECTO, LISTAS_PRECIOS, ListaPrecios, NOMBRE_LISTA } from './constants';
+import { CAMPO_PIEZAS_POR_CAJA, CAMPO_PIEZAS_POR_PAQUETE, CAMPO_PRECIO_VARIANTE, LISTA_POR_DEFECTO, LISTAS_PRECIOS, ListaPrecios, NOMBRE_LISTA } from './constants';
 import { ListaPreciosService } from './lista-precios.service';
 import { ListaPreciosStrategy } from './lista-precios.strategy';
 import { ProductoCajasResolver } from './producto-cajas.resolver';
@@ -48,6 +48,15 @@ const es = (value: string) => [{ languageCode: LanguageCode.es, value }];
                 label: es('Piezas por caja'),
                 description: es(
                     'Solo para la variante Caja: cuántas piezas trae. Con este dato la variante es una caja y solo la ven y compran los clientes de mayoreo. Déjalo vacío en la variante Pieza.',
+                ),
+            },
+            {
+                name: CAMPO_PIEZAS_POR_PAQUETE,
+                type: 'int' as const,
+                min: 1,
+                label: es('Piezas por paquete'),
+                description: es(
+                    'Cuántas piezas trae UNA pieza de venta (en 24/40 PZ, 40). Con este dato la tienda muestra el precio por pieza. Déjalo vacío si no se sabe: así no se muestra.',
                 ),
             },
         ];

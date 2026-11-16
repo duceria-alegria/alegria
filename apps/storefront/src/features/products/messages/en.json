@@ -18,6 +18,7 @@
     "decreaseQuantity": "Remove one",
     "inCart": "{count} in cart",
     "sku": "SKU: {sku}",
+    "pricePerPiece": "≈ {perPiece} each · the pack has {pieces} pieces",
     "boxSavingsFromPiece": "With the box of {pieces} pieces you save <b>{saving}</b> ({percent}%): each piece costs {perPiece} instead of {piecePrice}.",
     "boxSavingsFromBox": "You save <b>{saving}</b> ({percent}%) compared to buying {pieces} loose pieces: each piece costs {perPiece} instead of {piecePrice}.",
     "from": "From",
