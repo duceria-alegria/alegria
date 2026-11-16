@@ -48,6 +48,7 @@ export const GetProductDetailQuery = graphql(`
                 stockLevel
                 customFields {
                     piezasPorCaja
+                    piezasPorPaquete
                 }
                 options {
                     id

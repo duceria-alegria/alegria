@@ -18,6 +18,7 @@
     "decreaseQuantity": "Eins entfernen",
     "inCart": "{count} im Warenkorb",
     "sku": "Art.-Nr.: {sku}",
+    "pricePerPiece": "≈ {perPiece} pro Stück · die Packung enthält {pieces} Stück",
     "boxSavingsFromPiece": "Mit dem Karton mit {pieces} Stück sparen Sie <b>{saving}</b> ({percent} %): Jedes Stück kostet {perPiece} statt {piecePrice}.",
     "boxSavingsFromBox": "Sie sparen <b>{saving}</b> ({percent} %) gegenüber dem Kauf von {pieces} einzelnen Stücken: Jedes Stück kostet {perPiece} statt {piecePrice}.",
     "from": "Ab",

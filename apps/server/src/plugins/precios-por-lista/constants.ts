@@ -23,6 +23,13 @@ export const CAMPO_PRECIO_VARIANTE: Record<Exclude<ListaPrecios, 'menudeo'>, str
 /** Campo personalizado de ProductVariant: si tiene valor, la variante es una caja con esas piezas. */
 export const CAMPO_PIEZAS_POR_CAJA = 'piezasPorCaja';
 
+/**
+ * Campo personalizado de ProductVariant: cuántas piezas trae UN paquete de los que se venden como
+ * "pieza" (en `24/40 PZ`, 40). Con él la tienda muestra el precio por pieza; vacío = no se muestra.
+ * No confundir con `piezasPorCaja`, que marca a la variante Caja y cuenta paquetes.
+ */
+export const CAMPO_PIEZAS_POR_PAQUETE = 'piezasPorPaquete';
+
 export function esListaPrecios(value: unknown): value is ListaPrecios {
     return LISTAS_PRECIOS.includes(value as ListaPrecios);
 }

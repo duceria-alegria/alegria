@@ -26,7 +26,7 @@ interface ProductInfoProps {
             sku: string;
             priceWithTax: number;
             stockLevel: string;
-            customFields?: {piezasPorCaja?: number | null} | null;
+            customFields?: {piezasPorCaja?: number | null; piezasPorPaquete?: number | null} | null;
             options: Array<{
                 id: string;
                 code: string;
@@ -131,6 +131,14 @@ export function ProductInfo({product, searchParams, currencyCode}: ProductInfoPr
                 ? 'boxSavingsFromBox'
                 : null;
 
+    // Price of each individual candy, only when the catalog says how many come in the pack. The box
+    // variant counts packs (piezasPorCaja), so it never shows this line.
+    const perPiece = useMemo(() => {
+        const pieces = selectedVariant?.customFields?.piezasPorPaquete ?? 0;
+        if (!selectedVariant || pieces < 1 || selectedVariant.customFields?.piezasPorCaja) return null;
+        return {pieces, price: selectedVariant.priceWithTax / pieces};
+    }, [selectedVariant]);
+
     // Sync the stepper with whatever the cart already holds for this variant
     useEffect(() => {
         let cancelled = false;
@@ -204,6 +212,14 @@ export function ProductInfo({product, searchParams, currencyCode}: ProductInfoPr
                 {selectedVariant && (
                     <p className="text-2xl md:text-3xl text-muted-foreground font-semibold mt-3">
                         <Price value={selectedVariant.priceWithTax} currencyCode={currencyCode}/>
+                    </p>
+                )}
+                {perPiece && (
+                    <p className="text-sm text-muted-foreground">
+                        {t('pricePerPiece', {
+                            perPiece: formatPrice(perPiece.price, currencyCode),
+                            pieces: perPiece.pieces,
+                        })}
                     </p>
                 )}
                 {boxSavings && savingsMessageKey && (
