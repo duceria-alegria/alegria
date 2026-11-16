@@ -3,6 +3,7 @@
     "AddingItems": "Adding Items",
     "ArrangingPayment": "Arranging Payment",
     "PaymentAuthorized": "Payment Authorized",
+    "AwaitingTransfer": "Awaiting transfer",
     "PaymentSettled": "Payment Settled",
     "Preparing": "Preparing your order",
     "PartiallyShipped": "Partially Shipped",
@@ -22,6 +23,10 @@
     "shippingAddress": "Shipping Address",
     "pickupTitle": "Pick up in store",
     "continueShopping": "Continue Shopping",
-    "viewOrders": "View Orders"
+    "viewOrders": "View Orders",
+    "transferTitle": "Make your bank transfer",
+    "transferIntro": "Your order is reserved and we will prepare it as soon as we confirm your transfer. Use the order code as the payment reference.",
+    "transferAmount": "Exact amount",
+    "transferReference": "Payment reference"
   }
 }

@@ -12,7 +12,8 @@ import {Link} from '@/platform/i18n/navigation';
 import {Price} from '@/features/pricing/price';
 import {OrderAutoRefresh} from '@/features/orders/order-auto-refresh';
 import {OrderStatusBadge} from '@/features/orders/order-status-badge';
-import {formatDate} from '@/platform/i18n/format';
+import {BANK_TRANSFER_METHOD, bankTransferDetails, isPendingBankTransfer} from '@/features/orders/bank-transfer';
+import {LocalDate} from '@/platform/i18n/local-date';
 import {useLocale, useTranslations} from 'next-intl';
 import type {ResultOf} from '@/platform/vendure/graphql';
 import type {GetOrderDetailQuery} from '@/features/account/graphql';
@@ -39,7 +40,7 @@ export function OrderDetail({orderPromise}: OrderDetailProps) {
 
     return (
         <div>
-            <OrderAutoRefresh state={order.state}/>
+            <OrderAutoRefresh code={order.code} state={order.state}/>
             <div className="mb-6">
                 <Button render={<Link href="/account/orders" />} nativeButton={false} variant="ghost" size="sm" className="mb-4">
                         <ChevronLeft className="h-4 w-4 mr-2"/>
@@ -49,10 +50,10 @@ export function OrderDetail({orderPromise}: OrderDetailProps) {
                     <div>
                         <h1 className="text-3xl font-bold">{t('order', {code: order.code})}</h1>
                         <p className="text-muted-foreground mt-1">
-                            {t('placedOn', {date: formatDate(order.createdAt, 'long', locale)})}
+                            {t.rich('placedOn', {date: () => <LocalDate value={order.createdAt} format="long" locale={locale} withTime/>})}
                         </p>
                     </div>
-                    <OrderStatusBadge state={order.state}/>
+                    <OrderStatusBadge state={order.state} payments={order.payments}/>
                 </div>
             </div>
 
@@ -169,11 +170,14 @@ export function OrderDetail({orderPromise}: OrderDetailProps) {
                         <Card>
                             <CardHeader><CardTitle>{t('payment')}</CardTitle></CardHeader>
                             <CardContent>
-                                {order.payments.map((payment: OrderPayment) => (
+                                {order.payments.map((payment: OrderPayment) => {
+                                    const pendingTransfer = isPendingBankTransfer(payment);
+                                    const transfer = pendingTransfer ? bankTransferDetails(payment.metadata) : undefined;
+                                    return (
                                     <div key={payment.id} className="space-y-1 text-sm">
                                         <div className="flex justify-between">
                                             <span className="text-muted-foreground">{t('method')}</span>
-                                            <span className="font-medium">{payment.method}</span>
+                                            <span className="font-medium">{payment.method === BANK_TRANSFER_METHOD ? t('bankTransfer') : payment.method}</span>
                                         </div>
                                         <div className="flex justify-between">
                                             <span className="text-muted-foreground">{t('amount')}</span>
@@ -181,7 +185,7 @@ export function OrderDetail({orderPromise}: OrderDetailProps) {
                                         </div>
                                         <div className="flex justify-between">
                                             <span className="text-muted-foreground">{t('paymentStatus')}</span>
-                                            <Badge variant="secondary" className="text-xs">{payment.state}</Badge>
+                                            <Badge variant="secondary" className="text-xs">{pendingTransfer ? t('awaitingTransfer') : payment.state}</Badge>
                                         </div>
                                         {payment.transactionId && (
                                             <div className="flex justify-between">
@@ -189,8 +193,16 @@ export function OrderDetail({orderPromise}: OrderDetailProps) {
                                                 <span className="font-mono text-xs">{payment.transactionId}</span>
                                             </div>
                                         )}
+                                        {transfer?.instructions && (
+                                            <div className="pt-2">
+                                                <Separator className="mb-2"/>
+                                                <p className="text-muted-foreground mb-1">{t('transferInstructions')}</p>
+                                                <p className="whitespace-pre-line">{transfer.instructions}</p>
+                                            </div>
+                                        )}
                                     </div>
-                                ))}
+                                    );
+                                })}
                             </CardContent>
                         </Card>
                     )}

@@ -26,6 +26,7 @@ import {
     prepararPedidos,
 } from './constants';
 import { SurtidoNoPermitidoError } from './errores';
+import { CODIGO_TRANSFERENCIA, MENSAJE_TRANSFERENCIA_PENDIENTE } from '../transferencia-bancaria/constants';
 
 /** Forma del campo personalizado `Order.surtidor` (relación con Administrator). */
 type CamposSurtidor = { surtidor?: Administrator | null; surtidorId?: ID | null };
@@ -34,7 +35,7 @@ const surtidorIdDe = (order: Order): ID | undefined =>
     (order.customFields as CamposSurtidor | undefined)?.surtidorId ?? undefined;
 
 /** Motivo por el que alguien no puede iniciar el surtido de un pedido. */
-export type ProblemaDeInicio = { tipo: 'permiso' | 'asignado'; mensaje: string };
+export type ProblemaDeInicio = { tipo: 'permiso' | 'asignado' | 'pago'; mensaje: string };
 
 @Injectable()
 export class FlujoBodegaService {
@@ -113,7 +114,9 @@ export class FlujoBodegaService {
 
     /**
      * Regla para iniciar el surtido (se usa en `iniciarSurtido` y en el proceso de pedidos, así que vale
-     * también con `transitionOrderToState`): hace falta `PrepararPedidos`, y si el pedido tiene un surtidor
+     * también con `transitionOrderToState`): no se surte con una transferencia bancaria sin confirmar (a
+     * diferencia de otros pagos autorizados: aquí aún no hay certeza de que el dinero llegó, y esto vale
+     * también sin sesión); hace falta `PrepararPedidos`, y si el pedido tiene un surtidor
      * vigente que no es quien lo inicia, también `AsignarPedidos`. Un surtidor eliminado (borrado lógico)
      * cuenta como pedido sin asignar. Sin sesión (código interno, scripts) no se aplica.
      *
@@ -121,6 +124,9 @@ export class FlujoBodegaService {
      * bloquear, y el proceso de pedidos llama antes a `bloquearYRefrescarSurtidor`.
      */
     async evaluarInicio(ctx: RequestContext, order: Order): Promise<ProblemaDeInicio | undefined> {
+        if (await this.transferenciaSinConfirmar(ctx, order)) {
+            return { tipo: 'pago', mensaje: MENSAJE_TRANSFERENCIA_PENDIENTE };
+        }
         if (!ctx.activeUserId) {
             return undefined;
         }
@@ -219,6 +225,12 @@ export class FlujoBodegaService {
             }
         }
         return undefined;
+    }
+
+    /** `true` si el pedido tiene una transferencia bancaria que aún espera confirmación del dueño. */
+    private async transferenciaSinConfirmar(ctx: RequestContext, order: Order): Promise<boolean> {
+        const pagos = order.payments ?? (await this.orderService.getOrderPayments(ctx, order.id));
+        return pagos.some(pago => pago.method === CODIGO_TRANSFERENCIA && pago.state === 'Authorized');
     }
 
     /** `true` si el pago del pedido todavía no está confirmado (`Settled`) por el total. */

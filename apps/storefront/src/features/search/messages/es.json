@@ -1,6 +1,7 @@
 {
   "Sort": {
     "relevance": "Relevancia",
+    "salesDesc": "Más vendidos",
     "nameAsc": "Nombre: de la A a la Z",
     "nameDesc": "Nombre: de la Z a la A",
     "priceAsc": "Precio: de menor a mayor",
@@ -14,7 +15,13 @@
     "removeAll": "Quitar todos",
     "searchPlaceholder": "Buscar…",
     "noMatches": "Sin resultados",
-    "filtersButton": "Filtros"
+    "filtersButton": "Filtros",
+    "priceTitle": "Precio",
+    "priceMin": "Mínimo",
+    "priceMax": "Máximo",
+    "priceRange": "De {min} a {max}",
+    "priceReset": "Quitar rango de precio",
+    "priceSelected": "Rango de precio aplicado"
   },
   "Search": {
     "title": "Buscar",

@@ -9,6 +9,7 @@ import {useTranslations} from 'next-intl';
 import {cn} from '@/lib/utils';
 import {NO_IMAGE_SRC} from '@/lib/no-image';
 import {ProductCardImages} from '@/features/products/components/product-card-images';
+import {FavoriteButton} from '@/features/favorites/favorite-button';
 import {ProductCardCartControl} from '@/features/products/components/product-card-cart-control';
 
 interface ProductCardProps {
@@ -64,6 +65,7 @@ export function ProductCard({product: productProp, preload, className}: ProductC
                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                     />
                 )}
+                <FavoriteButton productId={product.productId} productName={product.productName}/>
             </div>
             <div className="flex flex-col gap-1 px-1 pb-0.5 pt-2.5">
                 <h3 className="line-clamp-2 font-display text-[15px] font-bold leading-tight">

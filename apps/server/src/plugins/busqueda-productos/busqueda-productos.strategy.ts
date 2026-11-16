@@ -5,8 +5,10 @@ import {
     createPlaceholderFromId,
     getFieldsToSelect,
     hasSortParameter,
+    ID,
     Injector,
     mapToSearchResult,
+    Product,
     RequestContext,
     SearchStrategy,
     TransactionalConnection,
@@ -15,12 +17,24 @@ import {
 // La entidad del índice no está en la API pública de Vendure (@vendure/core está fijado en 3.8.1).
 import { SearchIndexItem } from '@vendure/core/dist/plugin/default-search-plugin/entities/search-index-item.entity';
 import { Brackets, SelectQueryBuilder } from 'typeorm';
+import { CajasService } from '../precios-por-lista/cajas.service';
+import { ListaPreciosService } from '../precios-por-lista/lista-precios.service';
+import { COLUMNA_VENTAS } from './constants';
+import { contextoDePrecio, expresionPrecio, unirVariante } from './filtro-precio';
 import { ProductSearchDocument } from './product-search-document.entity';
 import { buildSearchSql } from './search-sql';
 import { ParsedSearchQuery, parseSearchQuery } from './search-text';
 
-// `inStock` lo agrega DefaultSearchPlugin al input de la API (con `indexStockStatus`).
-type SearchInput = Parameters<SearchStrategy['getSearchResults']>[1] & { inStock?: boolean | null };
+// `inStock` lo agrega DefaultSearchPlugin al input de la API (con `indexStockStatus`) y `sort.ventas`,
+// `productIds`, `precioMin` y `precioMax` los agrega este plugin al esquema de la Shop API.
+type SearchInput = Omit<Parameters<SearchStrategy['getSearchResults']>[1], 'sort'> & {
+    inStock?: boolean | null;
+    productIds?: ID[] | null;
+    /** Rango de precio con impuestos, en centavos, según la lista del cliente. */
+    precioMin?: number | null;
+    precioMax?: number | null;
+    sort?: NonNullable<Parameters<SearchStrategy['getSearchResults']>[1]['sort']> & { ventas?: 'ASC' | 'DESC' | null };
+};
 type SearchResult = Awaited<ReturnType<SearchStrategy['getSearchResults']>>[number];
 
 /** Las mismas opciones que se le pasan a `DefaultSearchPlugin.init`. */
@@ -38,11 +52,15 @@ export interface BusquedaProductosStrategyOptions {
  */
 export class BusquedaProductosStrategy implements SearchStrategy {
     private connection: TransactionalConnection;
+    private listaPreciosService: ListaPreciosService;
+    private cajasService: CajasService;
 
     constructor(private readonly options: BusquedaProductosStrategyOptions = {}) {}
 
     async init(injector: Injector) {
         this.connection = injector.get(TransactionalConnection);
+        this.listaPreciosService = injector.get(ListaPreciosService);
+        this.cajasService = injector.get(CajasService);
     }
 
     async getFacetValueIds(ctx: RequestContext, input: SearchInput, enabledOnly: boolean) {
@@ -51,7 +69,7 @@ export class BusquedaProductosStrategy implements SearchStrategy {
             .createQueryBuilder('si')
             .select(['"si"."productId"', 'MAX("si"."productVariantId")'])
             .addSelect('string_agg("si"."facetValueIds",\',\')', 'facetValues');
-        this.applyTermAndFilters(ctx, facetValuesQb, input, parseSearchQuery(input.term));
+        await this.applyTermAndFilters(ctx, facetValuesQb, input, parseSearchQuery(input.term));
         if (!input.groupByProduct) {
             facetValuesQb.groupBy('"si"."productVariantId", "si"."productId"');
         }
@@ -67,7 +85,7 @@ export class BusquedaProductosStrategy implements SearchStrategy {
             .createQueryBuilder('si')
             .select(['"si"."productId"', 'MAX("si"."productVariantId")'])
             .addSelect('string_agg("si"."collectionIds",\',\')', 'collections');
-        this.applyTermAndFilters(ctx, collectionsQb, input, parseSearchQuery(input.term));
+        await this.applyTermAndFilters(ctx, collectionsQb, input, parseSearchQuery(input.term));
         if (!input.groupByProduct) {
             collectionsQb.groupBy('"si"."productVariantId", "si"."productId"');
         }
@@ -92,8 +110,16 @@ export class BusquedaProductosStrategy implements SearchStrategy {
                 .addSelect('MIN(si.priceWithTax)', 'minPriceWithTax')
                 .addSelect('MAX(si.priceWithTax)', 'maxPriceWithTax');
         }
-        this.applyTermAndFilters(ctx, qb, input, query, true);
+        await this.applyTermAndFilters(ctx, qb, input, query, true);
         if (hasSortParameter(sort)) {
+            if (sort?.ventas) {
+                // Lo vendido vive en el producto (no en el índice). Los productos sin dato van al final
+                // sea cual sea el sentido, y a igual cantidad se ordena por nombre.
+                qb.leftJoin(Product, 'prod', '"prod"."id" = "si"."productId"')
+                    .addSelect(`MAX("prod"."${COLUMNA_VENTAS}")`, 'ventas')
+                    .addOrderBy('"ventas"', sort.ventas, 'NULLS LAST')
+                    .addOrderBy('"si_productName"', 'ASC');
+            }
             if (sort?.name) {
                 qb.addOrderBy('"si_productName"', sort.name);
             }
@@ -116,7 +142,7 @@ export class BusquedaProductosStrategy implements SearchStrategy {
     }
 
     async getTotalCount(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<number> {
-        const innerQb = this.applyTermAndFilters(
+        const innerQb = await this.applyTermAndFilters(
             ctx,
             this.connection
                 .getRepository(ctx, SearchIndexItem)
@@ -137,7 +163,7 @@ export class BusquedaProductosStrategy implements SearchStrategy {
         return Number(total.total);
     }
 
-    private applyTermAndFilters(
+    private async applyTermAndFilters(
         ctx: RequestContext,
         qb: SelectQueryBuilder<SearchIndexItem>,
         input: SearchInput,
@@ -166,6 +192,28 @@ export class BusquedaProductosStrategy implements SearchStrategy {
                 .setParameters(search.params);
             if (withScore) {
                 qb.addSelect(input.groupByProduct ? `MAX(${search.score})` : search.score, 'score');
+            }
+        }
+
+        if (input.productIds) {
+            // Lista vacía = ningún producto (no "sin filtro").
+            if (input.productIds.length) {
+                qb.andWhere('si.productId IN (:...productIds)', { productIds: input.productIds });
+            } else {
+                qb.andWhere('1 = 0');
+            }
+        }
+
+        if (input.precioMin != null || input.precioMax != null) {
+            // Un producto cumple si alguna de sus variantes (que el cliente pueda ver) cae en el rango.
+            const contexto = await contextoDePrecio(this.listaPreciosService, this.cajasService, ctx);
+            const precio = expresionPrecio(contexto.lista);
+            unirVariante(qb, contexto);
+            if (input.precioMin != null) {
+                qb.andWhere(`${precio} >= :precioMin`, { precioMin: input.precioMin });
+            }
+            if (input.precioMax != null) {
+                qb.andWhere(`${precio} <= :precioMax`, { precioMax: input.precioMax });
             }
         }
 

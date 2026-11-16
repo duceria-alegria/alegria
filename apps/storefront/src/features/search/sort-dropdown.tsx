@@ -11,6 +11,7 @@ import {
 import {useSearchParams} from "next/navigation";
 import {usePathname, useRouter} from '@/platform/i18n/navigation';
 import {useTranslations} from 'next-intl';
+import {DEFAULT_SORT} from '@/features/search/search-helpers';
 
 export function SortDropdown() {
     const t = useTranslations('Sort');
@@ -22,6 +23,7 @@ export function SortDropdown() {
     const hasTerm = Boolean(searchParams.get('q')?.trim());
     const sortOptions = [
         ...(hasTerm ? [{value: 'relevance', label: t('relevance')}] : []),
+        {value: 'sales-desc', label: t('salesDesc')},
         {value: 'name-asc', label: t('nameAsc')},
         {value: 'name-desc', label: t('nameDesc')},
         {value: 'price-asc', label: t('priceAsc')},
@@ -29,7 +31,7 @@ export function SortDropdown() {
     ];
 
     const sortParam = searchParams.get('sort');
-    const currentSort = sortParam && sortParam !== 'relevance' ? sortParam : hasTerm ? 'relevance' : 'name-asc';
+    const currentSort = sortParam && sortParam !== 'relevance' ? sortParam : hasTerm ? 'relevance' : DEFAULT_SORT;
 
     const handleSortChange = (value: string | null) => {
         if (!value) return;

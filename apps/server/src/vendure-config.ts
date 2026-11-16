@@ -21,7 +21,15 @@ import { FlujoBodegaPlugin } from './plugins/flujo-bodega/flujo-bodega.plugin';
 import { ResendEmailSender } from './plugins/email/resend-email-sender';
 import { PreciosPorListaPlugin } from './plugins/precios-por-lista/precios-por-lista.plugin';
 import { BusquedaProductosPlugin } from './plugins/busqueda-productos/busqueda-productos.plugin';
+import { FavoritosPlugin } from './plugins/favoritos/favoritos.plugin';
+import { TransferenciaBancariaPlugin } from './plugins/transferencia-bancaria/transferencia-bancaria.plugin';
+import { PedidosEnVivoPlugin } from './plugins/pedidos-en-vivo/pedidos-en-vivo.plugin';
 import { BusquedaProductosStrategy } from './plugins/busqueda-productos/busqueda-productos.strategy';
+
+// Las columnas de fecha son `timestamp without time zone` y Postgres guarda en UTC. Si el proceso Node corre
+// en otra zona (p. ej. la hora de México en dev), el driver las lee corridas varias horas. Se fija UTC aquí
+// (config se carga antes que nada, también en el worker y en las migraciones); cada cliente convierte a su zona.
+process.env.TZ = 'UTC';
 
 // Opciones de DefaultSearchPlugin; la estrategia propia necesita las mismas para armar su consulta.
 const SEARCH_OPTIONS = { bufferUpdates: false, indexStockStatus: true };
@@ -87,6 +95,8 @@ export const config: VendureConfig = {
         port: +process.env.DB_PORT,
         username: process.env.DB_USERNAME,
         password: process.env.DB_PASSWORD,
+        // La sesión de Postgres también en UTC, sin importar la zona configurada en el servidor de BD.
+        extra: { options: '-c timezone=UTC' },
     },
     paymentOptions: {
         paymentMethodHandlers: [dummyPaymentHandler],
@@ -97,6 +107,9 @@ export const config: VendureConfig = {
     plugins: [
         PreciosPorListaPlugin,
         FlujoBodegaPlugin,
+        FavoritosPlugin,
+        TransferenciaBancariaPlugin,
+        PedidosEnVivoPlugin,
         GraphiqlPlugin.init(),
         AssetServerPlugin.init({
             route: 'assets',

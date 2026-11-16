@@ -40,7 +40,7 @@ export async function Footer() {
                                 alt={SITE_NAME}
                                 width={358}
                                 height={352}
-                                className="block h-40 w-auto sm:h-30[filter:drop-shadow(0_0_1.5px_#fff)_drop-shadow(0_8px_14px_rgb(0_0_0/0.45))]"
+                                className="block h-40 w-auto sm:h-30 [filter:drop-shadow(0_0_1.5px_#fff)_drop-shadow(0_8px_14px_rgb(0_0_0/0.45))]"
                             />
                         </NavigationLink>
                         <p className="max-w-[34ch] self-center text-center text-[15px] leading-relaxed text-white/80 sm:self-start sm:text-left">

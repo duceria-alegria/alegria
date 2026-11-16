@@ -7,6 +7,7 @@ const featureNames = [
   "checkout",
   "collections",
   "currency",
+  "favorites",
   "orders",
   "pricing",
   "products",

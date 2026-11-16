@@ -1,0 +1,17 @@
+{
+  "Favorites": {
+    "pageTitle": "My favorites",
+    "title": "My favorites",
+    "count": "{count, plural, one {# product} other {# products}}",
+    "emptyTitle": "You have no favorites yet",
+    "emptyHint": "Tap the heart on any product to save it here and find it quickly.",
+    "browse": "Browse products",
+    "add": "Add to favorites",
+    "remove": "Remove from favorites",
+    "added": "Added to favorites",
+    "removed": "Removed from favorites",
+    "signInTitle": "Sign in to save your favorites",
+    "signInAction": "Sign in",
+    "errorUpdate": "Your favorites could not be updated"
+  }
+}

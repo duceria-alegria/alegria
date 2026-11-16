@@ -20,41 +20,21 @@ interface NavItem {
 
 interface AccountNavLinksProps {
     items: NavItem[];
-    layout: 'horizontal' | 'vertical';
 }
 
-export function AccountNavLinks({items, layout}: AccountNavLinksProps) {
+/**
+ * The account sections as a row of pill tabs. The active tab is filled purple so it does not read as a second
+ * copy of the store's main nav, whose active pill is yellow. On phones the row scrolls sideways if it ever overflows.
+ */
+export function AccountNavLinks({items}: AccountNavLinksProps) {
     const pathname = usePathname();
     const t = useTranslations('Account');
 
-    if (layout === 'horizontal') {
-        return (
-            <nav className="flex gap-1 overflow-x-auto border-b border-border pb-px">
-                {items.map((item) => {
-                    const isActive = pathname.startsWith(item.href);
-                    const Icon = iconMap[item.icon];
-                    return (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            className={cn(
-                                'flex items-center gap-2 px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors',
-                                isActive
-                                    ? 'border-primary text-foreground'
-                                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
-                            )}
-                        >
-                            {Icon && <Icon className="h-4 w-4" />}
-                            {t(item.labelKey)}
-                        </Link>
-                    );
-                })}
-            </nav>
-        );
-    }
-
     return (
-        <nav className="space-y-1">
+        <nav
+            aria-label={t('pageTitle')}
+            className="inline-flex max-w-full gap-1 overflow-x-auto rounded-full border border-[#efe8f6] bg-card p-1.5 shadow-tile [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
             {items.map((item) => {
                 const isActive = pathname.startsWith(item.href);
                 const Icon = iconMap[item.icon];
@@ -62,14 +42,15 @@ export function AccountNavLinks({items, layout}: AccountNavLinksProps) {
                     <Link
                         key={item.href}
                         href={item.href}
+                        aria-current={isActive ? 'page' : undefined}
                         className={cn(
-                            'flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-colors',
+                            'inline-flex min-h-10 shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-4 text-sm font-bold transition-colors sm:px-5 sm:text-[15px]',
                             isActive
-                                ? 'bg-accent text-accent-foreground'
-                                : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                                ? 'bg-primary font-extrabold text-primary-foreground shadow-button'
+                                : 'text-primary hover:bg-pastel-lavender'
                         )}
                     >
-                        {Icon && <Icon className="h-5 w-5" />}
+                        {Icon && <Icon className="size-4" strokeWidth={2.4} aria-hidden="true" />}
                         {t(item.labelKey)}
                     </Link>
                 );

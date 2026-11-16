@@ -11,6 +11,7 @@ import {ShoppingCart, CheckCircle2, Minus, Plus, PiggyBank, Trash2} from 'lucide
 import {addToCart, getCartLine, setCartLineQuantity, type CartLineState} from '@/features/products/add-to-cart';
 import {getBoxSavings} from '@/features/products/box-savings';
 import {toast} from 'sonner';
+import {FavoriteButton} from '@/features/favorites/favorite-button';
 import {Price, useFormatPrice} from '@/features/pricing/price';
 import {useTranslations} from 'next-intl';
 
@@ -196,7 +197,10 @@ export function ProductInfo({product, searchParams, currencyCode}: ProductInfoPr
         <div className="space-y-6">
             {/* Product Title & Price */}
             <div className="space-y-2">
-                <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{product.name}</h1>
+                <div className="flex items-start justify-between gap-3">
+                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{product.name}</h1>
+                    <FavoriteButton productId={product.id} productName={product.name} variant="detail" className="shrink-0"/>
+                </div>
                 {selectedVariant && (
                     <p className="text-2xl md:text-3xl text-muted-foreground font-semibold mt-3">
                         <Price value={selectedVariant.priceWithTax} currencyCode={currencyCode}/>

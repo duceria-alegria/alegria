@@ -39,7 +39,7 @@
     "items": "items",
     "backToOrders": "Back to Orders",
     "order": "Order {code}",
-    "placedOn": "Placed on {date}",
+    "placedOn": "Placed on <date></date>",
     "orderItems": "Order Items",
     "orderSummary": "Order Summary",
     "subtotal": "Subtotal",
@@ -52,6 +52,9 @@
     "amount": "Amount",
     "paymentStatus": "Status",
     "transactionId": "Transaction ID",
+    "bankTransfer": "Bank transfer",
+    "awaitingTransfer": "Awaiting confirmation",
+    "transferInstructions": "Transfer details",
     "shippingMethod": "Shipping Method",
     "qty": "Qty: {quantity}",
     "skuLabel": "SKU: {sku}",
@@ -108,6 +111,14 @@
       "errorMessage": "Please try again later or contact support if the problem persists.",
       "verifying": "Verifying Email...",
       "verifyingDesc": "Please wait while we verify your email address."
-    }
+    },
+    "heroBadge": "My account",
+    "hello": "Hi, {name}!",
+    "heroSubtitle": "Keep your details up to date so your orders arrive without a hitch.",
+    "memberSince": "Customer since <date></date>",
+    "firstNamePlaceholder": "e.g. Mary",
+    "lastNamePlaceholder": "e.g. Smith",
+    "newEmailPlaceholder": "your.new@email.com",
+    "saveChanges": "Save changes"
   }
 }

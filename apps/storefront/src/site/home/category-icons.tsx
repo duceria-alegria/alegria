@@ -33,6 +33,44 @@ const ICONS = {
             <path d="M15 6l1.5-3"/>
         </>
     ),
+    tamarindos: (
+        <>
+            <path d="M3.5 16C6 8 13 4.5 20.5 5.5 19.5 13 13 20 3.5 16z"/>
+            <path d="M8 13.5l2.5-3M12 12.5l2.5-3.5"/>
+        </>
+    ),
+    frituras: (
+        <>
+            <path d="M6 3h12l-1 18H7z"/>
+            <path d="M6 7h12M6 17h12"/>
+            <circle cx="12" cy="12" r="2"/>
+        </>
+    ),
+    chicles: (
+        <>
+            <rect x="3" y="8" width="18" height="8" rx="1.5"/>
+            <path d="M8 8v8M13 8v8"/>
+        </>
+    ),
+    cacahuates: (
+        <>
+            <circle cx="9" cy="15" r="4.5"/>
+            <circle cx="15" cy="9" r="4.5"/>
+            <path d="M10.5 10.5l3 3"/>
+        </>
+    ),
+    gelatinas: (
+        <>
+            <path d="M6 20h12l1.5-11h-15z"/>
+            <path d="M8 9c0-3 1.8-5 4-5s4 2 4 5"/>
+        </>
+    ),
+    desechables: (
+        <>
+            <path d="M6 4h12l-1.5 16h-9z"/>
+            <path d="M6.6 9h10.8"/>
+        </>
+    ),
     regalos: (
         <>
             <rect x="4" y="10" width="16" height="10" rx="1"/>

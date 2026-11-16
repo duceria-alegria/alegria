@@ -49,3 +49,32 @@ export const SearchFacetValuesQuery = graphql(`
         }
     }
 `);
+
+// Valores del filtro "Línea" (con su conteo de productos) para armar los accesos del inicio.
+export const GetLineasQuery = graphql(`
+    query GetLineas {
+        search(input: {groupByProduct: true, take: 0}) {
+            facetValues {
+                count
+                facetValue {
+                    id
+                    name
+                    code
+                    facet {
+                        code
+                    }
+                }
+            }
+        }
+    }
+`);
+
+// Precio más bajo y más alto del catálogo (en centavos, según la lista del cliente): los extremos de la barra de precio.
+export const PriceRangeQuery = graphql(`
+    query PriceRange {
+        rangoPrecios {
+            min
+            max
+        }
+    }
+`);

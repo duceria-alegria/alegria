@@ -3,6 +3,7 @@
     "AddingItems": "Agregando artículos",
     "ArrangingPayment": "Procesando pago",
     "PaymentAuthorized": "Pago autorizado",
+    "AwaitingTransfer": "Esperando transferencia",
     "PaymentSettled": "Pago confirmado",
     "Preparing": "Atendiendo pedido",
     "PartiallyShipped": "Enviado parcialmente",
@@ -22,6 +23,10 @@
     "shippingAddress": "Dirección de envío",
     "pickupTitle": "Recoger en tienda",
     "continueShopping": "Seguir comprando",
-    "viewOrders": "Ver pedidos"
+    "viewOrders": "Ver pedidos",
+    "transferTitle": "Realiza tu transferencia",
+    "transferIntro": "Tu pedido queda apartado y lo preparamos en cuanto confirmemos tu transferencia. Usa el código del pedido como concepto.",
+    "transferAmount": "Monto exacto",
+    "transferReference": "Concepto o referencia"
   }
 }

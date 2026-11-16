@@ -1,11 +1,12 @@
 'use client';
 
 import { useActionState, useEffect } from 'react';
+import { KeyRound, Loader2, ShieldCheck } from 'lucide-react';
 import { updatePasswordAction } from './actions';
+import { ProfileFormMessage, ProfileSection, profileButtonClass, profileFieldClass } from './profile-section';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { PasswordInput } from '@/components/ui/password-input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {useTranslations} from 'next-intl';
 
 export function ChangePasswordForm() {
@@ -20,60 +21,55 @@ export function ChangePasswordForm() {
     }, [state?.success]);
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>{t('changePassword')}</CardTitle>
-                <CardDescription>
-                    {t('changePasswordDescription')}
-                </CardDescription>
-            </CardHeader>
-            <form id="change-password-form" action={formAction}>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="currentPassword">{t('currentPassword')}</Label>
-                        <PasswordInput
-                            id="currentPassword"
-                            name="currentPassword"
-                            placeholder="••••••••"
-                            required
-                            disabled={isPending}
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="newPassword">{t('newPassword')}</Label>
-                        <PasswordInput
-                            id="newPassword"
-                            name="newPassword"
-                            placeholder="••••••••"
-                            required
-                            disabled={isPending}
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="confirmPassword">{t('confirmNewPassword')}</Label>
-                        <PasswordInput
-                            id="confirmPassword"
-                            name="confirmPassword"
-                            placeholder="••••••••"
-                            required
-                            disabled={isPending}
-                        />
-                    </div>
-                    {state?.error && (
-                        <div className="text-sm text-destructive">
-                            {state.error}
-                        </div>
-                    )}
-                    {state?.success && (
-                        <div className="text-sm text-green-600">
-                            {t('passwordUpdated')}
-                        </div>
-                    )}
-                    <Button type="submit" disabled={isPending}>
+        <ProfileSection icon={ShieldCheck} tone="pink" title={t('changePassword')} description={t('changePasswordDescription')}>
+            <form id="change-password-form" action={formAction} className="space-y-5">
+                <div className="space-y-2">
+                    <Label htmlFor="currentPassword" className="font-bold">{t('currentPassword')}</Label>
+                    <PasswordInput
+                        id="currentPassword"
+                        name="currentPassword"
+                        autoComplete="current-password"
+                        placeholder="••••••••"
+                        required
+                        disabled={isPending}
+                        className={profileFieldClass}
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="newPassword" className="font-bold">{t('newPassword')}</Label>
+                    <PasswordInput
+                        id="newPassword"
+                        name="newPassword"
+                        autoComplete="new-password"
+                        placeholder="••••••••"
+                        required
+                        disabled={isPending}
+                        className={profileFieldClass}
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="confirmPassword" className="font-bold">{t('confirmNewPassword')}</Label>
+                    <PasswordInput
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        autoComplete="new-password"
+                        placeholder="••••••••"
+                        required
+                        disabled={isPending}
+                        className={profileFieldClass}
+                    />
+                </div>
+                {state?.error && <ProfileFormMessage tone="error">{state.error}</ProfileFormMessage>}
+                {state?.success && <ProfileFormMessage tone="success">{t('passwordUpdated')}</ProfileFormMessage>}
+                <div className="flex justify-end">
+                    <Button type="submit" disabled={isPending} className={profileButtonClass}>
+                        {isPending
+                            ? <Loader2 className="size-4 animate-spin" aria-hidden="true"/>
+                            : <KeyRound className="size-4" strokeWidth={2.4} aria-hidden="true"/>}
                         {isPending ? t('updating') : t('updatePassword')}
                     </Button>
-                </CardContent>
+                </div>
             </form>
-        </Card>
+        </ProfileSection>
     );
 }

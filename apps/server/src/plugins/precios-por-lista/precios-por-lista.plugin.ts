@@ -22,6 +22,8 @@ const es = (value: string) => [{ languageCode: LanguageCode.es, value }];
 @VendurePlugin({
     imports: [PluginCommonModule],
     providers: [ListaPreciosService, CajasService],
+    // El buscador (plugin busqueda-productos) filtra por precio según la lista y las cajas visibles.
+    exports: [ListaPreciosService, CajasService],
     shopApiExtensions: { resolvers: [SearchResultPriceResolver, ProductoCajasResolver] },
     configuration: config => {
         config.customFields.ProductVariant = [
