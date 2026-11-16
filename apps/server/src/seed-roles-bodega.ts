@@ -1,6 +1,6 @@
 /**
- * Crea los roles de bodega (Surtidor y Encargado) y tres administradores de prueba:
- * surtidor1, surtidor2 y encargado, con una contraseña de prueba conocida. Es idempotente: si el rol o el
+ * Crea los roles de bodega (Surtidor y Encargado), un rol Dueño de prueba y cuatro administradores de prueba:
+ * surtidor1, surtidor2, encargado y dueno, con una contraseña de prueba conocida. Es idempotente: si el rol o el
  * correo ya existen, se actualizan los permisos del rol y se asegura que la cuenta tenga su rol; la
  * contraseña de una cuenta que ya existe no se toca.
  *
@@ -9,6 +9,8 @@
  * - Surtidor: ve pedidos y catálogo, e inicia el surtido (`PrepararPedidos`).
  * - Encargado: lo del Surtidor, más `UpdateOrder` (cerrar el pedido con Fulfill, confirmar pagos, cambiar
  *   el estado), `AsignarPedidos` y `ReadAdministrator` (para elegir a quién asignar).
+ * - Dueño (solo para probar): lo del Encargado, más `AutorizarTransferencias`. En producción esa cuenta es el
+ *   SuperAdmin, que ya tiene todos los permisos; este rol deja probar con un usuario que no lo es.
  *
  * Uso (desde apps/server):  npx ts-node src/seed-roles-bodega.ts
  */
@@ -26,6 +28,7 @@ import {
 import { IsNull } from 'typeorm';
 import { config } from './vendure-config';
 import { asignarPedidos, prepararPedidos } from './plugins/flujo-bodega/constants';
+import { autorizarTransferencias } from './plugins/transferencia-bancaria/constants';
 
 // Solo para desarrollo local. No usar en producción.
 const PASSWORD_PRUEBA = 'prueba123';
@@ -38,6 +41,8 @@ const PERMISOS_ENCARGADO: string[] = [
     Permission.ReadAdministrator,
 ];
 
+const PERMISOS_DUENO: string[] = [...PERMISOS_ENCARGADO, autorizarTransferencias.Permission];
+
 const ROLES_BODEGA = [
     {
         code: 'surtidor',
@@ -49,12 +54,18 @@ const ROLES_BODEGA = [
         description: 'Encargado de bodega: asigna pedidos, cierra los envíos y confirma pagos',
         permissions: PERMISOS_ENCARGADO,
     },
+    {
+        code: 'dueno',
+        description: 'Dueño (de prueba): lo del Encargado y confirmar o rechazar transferencias bancarias',
+        permissions: PERMISOS_DUENO,
+    },
 ];
 
 const ADMINS_PRUEBA = [
     { emailAddress: 'surtidor1@prueba.test', firstName: 'Surtidor', lastName: '1', rol: 'surtidor' },
     { emailAddress: 'surtidor2@prueba.test', firstName: 'Surtidor', lastName: '2', rol: 'surtidor' },
     { emailAddress: 'encargado@prueba.test', firstName: 'Encargado', lastName: 'Bodega', rol: 'encargado' },
+    { emailAddress: 'dueno@prueba.test', firstName: 'Dueño', lastName: 'Prueba', rol: 'dueno' },
 ];
 
 async function main() {

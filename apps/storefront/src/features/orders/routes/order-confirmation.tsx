@@ -1,6 +1,6 @@
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
-import {Check, ShoppingBag, ClipboardList} from 'lucide-react';
+import {Check, ShoppingBag, ClipboardList, Landmark} from 'lucide-react';
 import { Link } from '@/platform/i18n/navigation';
 import Image from 'next/image';
 import { NO_IMAGE_SRC } from '@/lib/no-image';
@@ -12,6 +12,8 @@ import {getTranslations} from 'next-intl/server';
 import {query} from '@/platform/vendure/api';
 import {graphql} from '@/platform/vendure/graphql';
 import {isPickupShippingMethod} from '@/features/checkout/pickup';
+import {bankTransferDetails, isPendingBankTransfer} from '../bank-transfer';
+import {LiveOrderUpdates} from '../live-order-updates';
 
 const GetOrderByCodeQuery = graphql(`
     query GetOrderByCode($code: String!) {
@@ -55,6 +57,12 @@ const GetOrderByCodeQuery = graphql(`
                     description
                 }
             }
+            payments {
+                method
+                state
+                amount
+                metadata
+            }
         }
     }
 `);
@@ -75,10 +83,14 @@ export async function OrderConfirmation({paramsPromise}: OrderConfirmationProps)
         notFound();
     }
 
+    const pendingTransfer = order.payments?.find(isPendingBankTransfer);
+    const transfer = pendingTransfer ? bankTransferDetails(pendingTransfer.metadata) : undefined;
+
     const pickupLine = order.shippingLines.find((line) => isPickupShippingMethod(line.shippingMethod));
 
     return (
         <div className="container mx-auto px-4 py-16">
+            <LiveOrderUpdates code={order.code}/>
             <div className="max-w-3xl mx-auto">
                 <div className="text-center mb-10">
                     <div className="flex justify-center mb-6">
@@ -95,6 +107,36 @@ export async function OrderConfirmation({paramsPromise}: OrderConfirmationProps)
                         {t('emailConfirmation')}
                     </p>
                 </div>
+
+                {pendingTransfer && transfer && (
+                    <Card className="mb-6 border-primary">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Landmark className="h-5 w-5" />
+                                {t('transferTitle')}
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            <p className="text-sm text-muted-foreground">{t('transferIntro')}</p>
+                            <div className="flex justify-between items-baseline">
+                                <span className="text-sm text-muted-foreground">{t('transferAmount')}</span>
+                                <span className="font-bold">
+                                    <Price value={pendingTransfer.amount} currencyCode={order.currencyCode}/>
+                                </span>
+                            </div>
+                            <div className="flex justify-between items-baseline">
+                                <span className="text-sm text-muted-foreground">{t('transferReference')}</span>
+                                <span className="font-mono font-semibold">{transfer.reference ?? order.code}</span>
+                            </div>
+                            {transfer.instructions && (
+                                <>
+                                    <Separator/>
+                                    <p className="text-sm whitespace-pre-line">{transfer.instructions}</p>
+                                </>
+                            )}
+                        </CardContent>
+                    </Card>
+                )}
 
                 <Card className="mb-6">
                     <CardHeader>

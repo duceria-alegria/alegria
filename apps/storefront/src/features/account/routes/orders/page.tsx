@@ -15,7 +15,8 @@ import {ArrowRightIcon} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {Price} from '@/features/pricing/price';
 import {OrderStatusBadge} from '@/features/orders/order-status-badge';
-import {formatDate} from '@/platform/i18n/format';
+import {LiveOrderUpdates} from '@/features/orders/live-order-updates';
+import {LocalDate} from '@/platform/i18n/local-date';
 import { Link, redirect } from '@/platform/i18n/navigation';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {getTranslations} from 'next-intl/server';
@@ -63,7 +64,8 @@ export default async function OrdersPage(props: PageProps<'/[locale]/account/ord
     const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
     return (
-        <div>
+        <div data-account-wide>
+            <LiveOrderUpdates/>
             <h1 className="text-3xl font-bold mb-6">{t('myOrders')}</h1>
 
             {orders.length === 0 ? (
@@ -82,10 +84,10 @@ export default async function OrdersPage(props: PageProps<'/[locale]/account/ord
                             >
                                 <div className="flex items-center justify-between mb-3">
                                     <span className="font-semibold">#{order.code}</span>
-                                    <OrderStatusBadge state={order.state}/>
+                                    <OrderStatusBadge state={order.state} payments={order.payments}/>
                                 </div>
                                 <div className="flex items-center justify-between text-sm">
-                                    <span className="text-muted-foreground">{formatDate(order.createdAt, 'short', locale)}</span>
+                                    <span className="text-muted-foreground"><LocalDate value={order.createdAt} locale={locale}/></span>
                                     <span className="font-medium text-base">
                                         <Price value={order.totalWithTax} currencyCode={order.currencyCode}/>
                                     </span>
@@ -121,10 +123,10 @@ export default async function OrdersPage(props: PageProps<'/[locale]/account/ord
                                             </Button>
                                         </TableCell>
                                         <TableCell>
-                                            {formatDate(order.createdAt, 'short', locale)}
+                                            <LocalDate value={order.createdAt} locale={locale}/>
                                         </TableCell>
                                         <TableCell>
-                                            <OrderStatusBadge state={order.state}/>
+                                            <OrderStatusBadge state={order.state} payments={order.payments}/>
                                         </TableCell>
                                         <TableCell>
                                             {order.lines.length}{' '}

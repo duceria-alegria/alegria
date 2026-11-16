@@ -3,6 +3,7 @@
     "AddingItems": "Artikel hinzufügen",
     "ArrangingPayment": "Zahlung wird vorbereitet",
     "PaymentAuthorized": "Zahlung autorisiert",
+    "AwaitingTransfer": "Warten auf Überweisung",
     "PaymentSettled": "Zahlung abgeschlossen",
     "Preparing": "Wird vorbereitet",
     "PartiallyShipped": "Teilweise versendet",
@@ -22,6 +23,10 @@
     "shippingAddress": "Lieferadresse",
     "pickupTitle": "Abholung im Geschäft",
     "continueShopping": "Weiter einkaufen",
-    "viewOrders": "Bestellungen ansehen"
+    "viewOrders": "Bestellungen ansehen",
+    "transferTitle": "Überweisung durchführen",
+    "transferIntro": "Deine Bestellung ist reserviert und wird vorbereitet, sobald wir deine Überweisung bestätigt haben. Gib den Bestellcode als Verwendungszweck an.",
+    "transferAmount": "Genauer Betrag",
+    "transferReference": "Verwendungszweck"
   }
 }

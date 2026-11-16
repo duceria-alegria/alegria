@@ -3,6 +3,7 @@
 import {ComponentProps, useTransition} from "react";
 import {User} from 'lucide-react';
 import {logoutAction} from '@/features/authentication/logout';
+import {resetFavorites} from '@/features/favorites/favorites-store';
 import {useRouter} from '@/platform/i18n/navigation';
 import {useTranslations} from 'next-intl';
 
@@ -20,6 +21,7 @@ export function LoginButton({isLoggedIn, ...props}: LoginButtonProps) {
                 onClick={() => {
                     if (isLoggedIn) {
                         startTransition(async () => {
+                            resetFavorites();
                             await logoutAction()
                         })
                     } else {

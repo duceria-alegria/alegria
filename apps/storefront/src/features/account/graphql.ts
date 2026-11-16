@@ -6,6 +6,7 @@ export const ActiveCustomerFragment = graphql(`
         firstName
         lastName
         emailAddress
+        createdAt
     }
 `);
 
@@ -57,6 +58,10 @@ export const GetCustomerOrdersQuery = graphql(`
                     currencyCode
                     createdAt
                     updatedAt
+                    payments {
+                        method
+                        state
+                    }
                     lines {
                         id
                         productVariant {
@@ -137,6 +142,7 @@ export const GetOrderDetailQuery = graphql(`
                 amount
                 state
                 transactionId
+                metadata
                 createdAt
             }
             lines {

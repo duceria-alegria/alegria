@@ -5,6 +5,7 @@
   "checkout",
   "collections",
   "currency",
+  "favorites",
   "orders",
   "pricing",
   "products",

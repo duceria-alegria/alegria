@@ -1,5 +1,6 @@
 import Image from "next/image";
 import {NavigationLink} from '@/site/navigation/navigation-link';
+import {FavoritesLink} from '@/site/navigation/navbar/favorites-link';
 import {NavbarCart} from '@/site/navigation/navbar/navbar-cart';
 import {NavbarUser} from '@/site/navigation/navbar/navbar-user';
 import {CurrencyPickerWrapper} from '@/site/navigation/navbar/currency-picker-wrapper';
@@ -39,6 +40,7 @@ export function Navbar() {
                             <Suspense fallback={<NavbarUserSkeleton />}>
                                 <NavbarUser/>
                             </Suspense>
+                            <FavoritesLink/>
                             <Suspense>
                                 <NavbarCart/>
                             </Suspense>

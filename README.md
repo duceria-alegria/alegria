@@ -108,6 +108,12 @@ match every `-CAJA` variant). The Shop API is unchanged; the code lives in `apps
     `pendiente` are known limits (e.g. `lukas` for `lucas`): they don't fail, but the report tells you when one starts
     working. When a customer can't find something, add that search there with what they expected to find.
 - Without an explicit sort a term is ordered by relevance; the storefront offers it as "Relevancia".
+- **Best sellers** ("Más vendidos") is the default order of the catalog when nothing is searched. It sorts by the
+  `ventas` custom field of Product (pesos sold, not exposed in the Shop API; editable in the Dashboard), exposed as
+  `sort: { ventas: DESC }` in the Shop API search. Products without a value go last. Load/refresh it from the point of
+  sale's "Mejores artículos" report (.xlsx) with `npx ts-node src/cargar-ventas.ts <PRODUCTOS.xlsx> [--simular]` from
+  `apps/server` (production: `node dist/cargar-ventas.js <file>`). It matches by article name, sets the products that
+  are not in the report to 0, and is a plain UPDATE: no reindex needed. Re-run it with a newer report from time to time.
 - The shop search box (`apps/storefront/src/features/search/search-box.tsx`) searches while typing: 300 ms after the last
   key and from 2 characters (Enter searches right away). Typing uses `router.replace`, so the back button does not walk
   through partial words; Enter and the clear button add a history entry.

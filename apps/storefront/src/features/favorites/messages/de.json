@@ -1,0 +1,17 @@
+{
+  "Favorites": {
+    "pageTitle": "Meine Favoriten",
+    "title": "Meine Favoriten",
+    "count": "{count, plural, one {# Produkt} other {# Produkte}}",
+    "emptyTitle": "Du hast noch keine Favoriten",
+    "emptyHint": "Tippe bei einem Produkt auf das Herz, um es hier zu speichern und schnell wiederzufinden.",
+    "browse": "Produkte ansehen",
+    "add": "Zu Favoriten hinzufügen",
+    "remove": "Aus Favoriten entfernen",
+    "added": "Zu Favoriten hinzugefügt",
+    "removed": "Aus Favoriten entfernt",
+    "signInTitle": "Melde dich an, um deine Favoriten zu speichern",
+    "signInAction": "Anmelden",
+    "errorUpdate": "Deine Favoriten konnten nicht aktualisiert werden"
+  }
+}

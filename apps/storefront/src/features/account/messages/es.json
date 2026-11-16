@@ -39,7 +39,7 @@
     "items": "artículos",
     "backToOrders": "Volver a pedidos",
     "order": "Pedido {code}",
-    "placedOn": "Realizado el {date}",
+    "placedOn": "Realizado el <date></date>",
     "orderItems": "Artículos del pedido",
     "orderSummary": "Resumen del pedido",
     "subtotal": "Subtotal",
@@ -52,6 +52,9 @@
     "amount": "Monto",
     "paymentStatus": "Estado",
     "transactionId": "ID de transacción",
+    "bankTransfer": "Transferencia bancaria",
+    "awaitingTransfer": "Pendiente de confirmar",
+    "transferInstructions": "Datos para transferir",
     "shippingMethod": "Método de envío",
     "qty": "Cant.: {quantity}",
     "skuLabel": "SKU: {sku}",
@@ -108,6 +111,14 @@
       "errorMessage": "Inténtalo de nuevo más tarde o contacta a soporte si el problema persiste.",
       "verifying": "Verificando correo...",
       "verifyingDesc": "Espera mientras verificamos tu correo electrónico."
-    }
+    },
+    "heroBadge": "Mi cuenta",
+    "hello": "¡Hola, {name}!",
+    "heroSubtitle": "Mantén tus datos al día para que tus pedidos lleguen sin contratiempos.",
+    "memberSince": "Cliente desde <date></date>",
+    "firstNamePlaceholder": "Ej. María",
+    "lastNamePlaceholder": "Ej. López",
+    "newEmailPlaceholder": "tu.nuevo@correo.com",
+    "saveChanges": "Guardar cambios"
   }
 }

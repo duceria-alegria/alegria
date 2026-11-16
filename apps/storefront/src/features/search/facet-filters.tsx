@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState } from 'react';
+import { type ReactNode, use, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { usePathname, useRouter } from '@/platform/i18n/navigation';
 import { ResultOf } from '@/platform/vendure/graphql';
@@ -13,6 +13,7 @@ import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/component
 import { SlidersHorizontal, ChevronDown, Search } from 'lucide-react';
 import {SearchProductsQuery} from '@/features/search/graphql';
 import {useTranslations} from 'next-intl';
+import {PriceRangeFilter} from '@/features/search/price-range-filter';
 
 interface FacetFiltersProps {
     productDataPromise: Promise<{
@@ -20,6 +21,8 @@ interface FacetFiltersProps {
         token?: string;
         // Todos los valores de filtro, incluidos los que el filtro actual dejaría fuera.
         facetCatalog: ResultOf<typeof SearchProductsQuery>['search']['facetValues'];
+        // Precio más bajo y más alto del catálogo, en centavos, para la barra de precio.
+        priceRange: {min: number; max: number};
     }>;
 }
 
@@ -105,7 +108,11 @@ function FilterContent({
     selectedFacets,
     toggleFacet,
     clearFilters,
+    priceFilter,
+    hasPriceFilter,
 }: {
+    priceFilter: ReactNode;
+    hasPriceFilter: boolean;
     facetGroups: Record<string, { id: string; name: string; values: Array<{ id: string; name: string; count: number }> }>;
     selectedFacets: string[];
     toggleFacet: (facetId: string) => void;
@@ -123,7 +130,7 @@ function FilterContent({
         <div className="space-y-4">
             <h2 className="font-semibold text-lg">{t('title')}</h2>
 
-            {selectedGroups.length > 0 && (
+            {(selectedGroups.length > 0 || hasPriceFilter) && (
                 <section className="space-y-3 rounded-xl bg-muted/50 p-3">
                     <div className="flex items-center justify-between gap-2">
                         <h3 className="text-sm font-semibold">{t('selected')}</h3>
@@ -131,6 +138,9 @@ function FilterContent({
                             {t('removeAll')}
                         </Button>
                     </div>
+                    {hasPriceFilter && selectedGroups.length === 0 && (
+                        <p className="text-xs text-muted-foreground">{t('priceSelected')}</p>
+                    )}
                     {selectedGroups.map(({facetName, id, values}) => (
                         <div key={id} className="space-y-2">
                             {Object.keys(facetGroups).length > 1 && (
@@ -144,8 +154,11 @@ function FilterContent({
                 </section>
             )}
 
+            {priceFilter}
+
             {Object.entries(facetGroups).map(([facetName, facet]) => {
-                const values = facet.values.filter((value) => !selectedFacets.includes(value.id));
+                // Sin productos en el rango de precio elegido no hay nada que filtrar; las marcadas sí se quedan (arriba).
+                const values = facet.values.filter((value) => !selectedFacets.includes(value.id) && value.count > 0);
                 if (values.length === 0) return null;
                 return (
                     <FacetGroup
@@ -194,6 +207,23 @@ export function FacetFilters({ productDataPromise }: FacetFiltersProps) {
     }, {});
 
     const selectedFacets = searchParams.getAll('facets');
+    const priceParam = (name: string) => {
+        const value = searchParams.get(name);
+        return value !== null && value.trim() !== '' && Number.isFinite(Number(value)) ? Number(value) : undefined;
+    };
+    const selectedPrice = {min: priceParam('precioMin'), max: priceParam('precioMax')};
+    const hasPriceFilter = selectedPrice.min !== undefined || selectedPrice.max !== undefined;
+
+    // El rango va en pesos en la URL; un extremo sin valor (o igual al del catálogo) no limita.
+    const applyPriceRange = ({min, max}: {min?: number; max?: number}) => {
+        const params = new URLSearchParams(searchParams);
+        params.delete('precioMin');
+        params.delete('precioMax');
+        if (min !== undefined) params.set('precioMin', String(min));
+        if (max !== undefined) params.set('precioMax', String(max));
+        params.delete('page');
+        router.push(`${pathname}?${params.toString()}`);
+    };
 
     const toggleFacet = (facetId: string) => {
         const params = new URLSearchParams(searchParams);
@@ -215,22 +245,32 @@ export function FacetFilters({ productDataPromise }: FacetFiltersProps) {
     const clearFilters = () => {
         const params = new URLSearchParams(searchParams);
         params.delete('facets');
+        params.delete('precioMin');
+        params.delete('precioMax');
         params.delete('page');
         router.push(`${pathname}?${params.toString()}`);
         setSheetOpen(false);
     };
 
-    const hasActiveFilters = selectedFacets.length > 0;
+    const activeFilterCount = selectedFacets.length + (hasPriceFilter ? 1 : 0);
+    const hasActiveFilters = activeFilterCount > 0;
+    const hasPriceBar = result.priceRange.max > result.priceRange.min;
 
-    if (Object.keys(facetGroups).length === 0) {
+    if (Object.keys(facetGroups).length === 0 && !hasPriceBar) {
         return null;
     }
+
+    const priceFilter = (
+        <PriceRangeFilter bounds={result.priceRange} selected={selectedPrice} onApply={applyPriceRange}/>
+    );
 
     const filterContentProps = {
         facetGroups,
         selectedFacets,
         toggleFacet,
         clearFilters,
+        priceFilter,
+        hasPriceFilter,
     };
 
     return (
@@ -245,7 +285,7 @@ export function FacetFilters({ productDataPromise }: FacetFiltersProps) {
                                 {t('filtersButton')}
                                 {hasActiveFilters && (
                                     <span className="ml-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-                                        {selectedFacets.length}
+                                        {activeFilterCount}
                                     </span>
                                 )}
                             </Button>

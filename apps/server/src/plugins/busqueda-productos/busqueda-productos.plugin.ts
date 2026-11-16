@@ -1,6 +1,8 @@
-import { PluginCommonModule, ScheduledTask, VendurePlugin } from '@vendure/core';
+import { LanguageCode, PluginCommonModule, ScheduledTask, VendurePlugin } from '@vendure/core';
 import gql from 'graphql-tag';
-import { BUSQUEDA_OPTIONS, BusquedaProductosOptions, verBusquedasClientes } from './constants';
+import { BUSQUEDA_OPTIONS, BusquedaProductosOptions, CAMPO_VENTAS, verBusquedasClientes } from './constants';
+import { PreciosPorListaPlugin } from '../precios-por-lista/precios-por-lista.plugin';
+import { RangoPreciosResolver } from './filtro-precio';
 import { ProductSearchDocument } from './product-search-document.entity';
 import { ProductSearchDocumentService } from './product-search-document.service';
 import { SearchLog } from './search-log.entity';
@@ -16,9 +18,35 @@ const shopApiSchema = gql`
         visitorId: String!
     }
 
+    extend input SearchInput {
+        "Solo estos productos (p. ej. los favoritos de un cliente). Una lista vacía no devuelve nada."
+        productIds: [ID!]
+        "Precio mínimo con impuestos, en centavos, según la lista del cliente. Cuenta si alguna variante a la venta lo cumple."
+        precioMin: Int
+        "Precio máximo con impuestos, en centavos (ver precioMin)."
+        precioMax: Int
+    }
+
+    type RangoPrecios {
+        "El producto más barato a la venta, en centavos."
+        min: Int!
+        "El producto más caro a la venta, en centavos."
+        max: Int!
+    }
+
+    extend input SearchResultSortParameter {
+        "Lo más vendido primero con DESC (según el campo Ventas del producto)."
+        ventas: SortOrder
+    }
+
     extend type SearchResult {
         "Fotos del producto en su orden (la principal primero), para el carrusel de la tarjeta."
         productAssets: [SearchResultAsset!]!
+    }
+
+    extend type Query {
+        "El precio más bajo y el más alto del catálogo para quien consulta (los extremos de la barra de precio)."
+        rangoPrecios: RangoPrecios!
     }
 
     extend type Mutation {
@@ -92,16 +120,33 @@ const limpiarBusquedasTask = new ScheduledTask({
  * saber qué no se encuentra. Ver `search-log.service.ts`.
  */
 @VendurePlugin({
-    imports: [PluginCommonModule],
+    imports: [PluginCommonModule, PreciosPorListaPlugin],
     entities: [ProductSearchDocument, SearchLog],
     providers: [
         ProductSearchDocumentService,
         SearchLogService,
         { provide: BUSQUEDA_OPTIONS, useFactory: () => BusquedaProductosPlugin.options },
     ],
-    shopApiExtensions: { schema: shopApiSchema, resolvers: [SearchLogResolver, SearchResultAssetsResolver] },
+    shopApiExtensions: { schema: shopApiSchema, resolvers: [SearchLogResolver, SearchResultAssetsResolver, RangoPreciosResolver] },
     adminApiExtensions: { schema: adminApiSchema, resolvers: [SearchLogAdminResolver] },
     configuration: config => {
+        config.customFields.Product = [
+            ...(config.customFields.Product ?? []),
+            {
+                name: CAMPO_VENTAS,
+                type: 'float' as const,
+                label: [{ languageCode: LanguageCode.es, value: 'Ventas' }],
+                description: [
+                    {
+                        languageCode: LanguageCode.es,
+                        value: 'Lo vendido en pesos en el periodo del reporte "Mejores artículos". La tienda ordena por este número ("Más vendidos"). Se carga con el script cargar-ventas.',
+                    },
+                ],
+                nullable: true,
+                // Es información del negocio: no se expone en la API de la tienda. La búsqueda lo lee de la base de datos.
+                public: false,
+            },
+        ];
         config.schedulerOptions.tasks = [...(config.schedulerOptions.tasks ?? []), limpiarBusquedasTask];
         config.authOptions.customPermissions = [...(config.authOptions.customPermissions ?? []), verBusquedasClientes];
         return config;

@@ -8,15 +8,18 @@ import {
     PackageCheck,
     Package,
     PackageOpen,
+    Landmark,
     XCircle,
     type LucideIcon,
 } from 'lucide-react';
 import {useTranslations} from 'next-intl';
+import {AWAITING_TRANSFER_STATE, displayOrderState} from './bank-transfer';
 
 const STATUS_CONFIG: Record<string, { color: string; icon: LucideIcon }> = {
     AddingItems: {color: 'bg-gray-100 text-gray-800', icon: ShoppingCart},
     ArrangingPayment: {color: 'bg-yellow-100 text-yellow-800', icon: CreditCard},
     PaymentAuthorized: {color: 'bg-blue-100 text-blue-800', icon: Clock},
+    [AWAITING_TRANSFER_STATE]: {color: 'bg-yellow-100 text-yellow-800', icon: Landmark},
     PaymentSettled: {color: 'bg-green-100 text-green-800', icon: CheckCircle},
     Preparing: {color: 'bg-amber-100 text-amber-800', icon: PackageOpen},
     PartiallyShipped: {color: 'bg-indigo-100 text-indigo-800', icon: Package},
@@ -28,13 +31,16 @@ const STATUS_CONFIG: Record<string, { color: string; icon: LucideIcon }> = {
 
 interface OrderStatusBadgeProps {
     state: string;
+    /** Con los pagos, una transferencia sin confirmar se muestra como "Esperando transferencia". */
+    payments?: readonly {method: string; state: string}[] | null;
 }
 
-export function OrderStatusBadge({state}: OrderStatusBadgeProps) {
+export function OrderStatusBadge({state: orderState, payments}: OrderStatusBadgeProps) {
+    const state = displayOrderState(orderState, payments);
     const t = useTranslations('OrderStatus');
     const config = STATUS_CONFIG[state] || {color: 'bg-gray-100 text-gray-800', icon: Clock};
     const Icon = config.icon;
-    const label = state in STATUS_CONFIG ? t(state as 'AddingItems' | 'ArrangingPayment' | 'PaymentAuthorized' | 'PaymentSettled' | 'Preparing' | 'PartiallyShipped' | 'Shipped' | 'PartiallyDelivered' | 'Delivered' | 'Cancelled') : state;
+    const label = state in STATUS_CONFIG ? t(state as 'AddingItems' | 'ArrangingPayment' | 'PaymentAuthorized' | 'AwaitingTransfer' | 'PaymentSettled' | 'Preparing' | 'PartiallyShipped' | 'Shipped' | 'PartiallyDelivered' | 'Delivered' | 'Cancelled') : state;
 
     return (
         <Badge className={config.color} variant="secondary">

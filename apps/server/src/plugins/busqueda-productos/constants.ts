@@ -3,6 +3,15 @@ import { PermissionDefinition } from '@vendure/core';
 export const BUSQUEDA_OPTIONS = Symbol('BUSQUEDA_PRODUCTOS_OPTIONS');
 
 /**
+ * Campo personalizado de Product con lo vendido (en pesos) en el periodo del reporte "Mejores
+ * artículos" del punto de venta. Es lo que ordena la tienda por "Más vendidos". Se carga con
+ * `src/cargar-ventas.ts` y se puede ajustar a mano en el Dashboard.
+ */
+export const CAMPO_VENTAS = 'ventas';
+/** Columna de `product` donde Vendure guarda ese campo. */
+export const COLUMNA_VENTAS = 'customFieldsVentas';
+
+/**
  * Quién puede ver la pantalla "Qué buscan los clientes" del Dashboard. El superadministrador ya la
  * tiene; a los demás roles se les asigna en Configuración → Roles.
  */

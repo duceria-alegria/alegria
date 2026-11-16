@@ -44,12 +44,18 @@ export default function ShippingStep({ onComplete, onModeChange }: ShippingStepP
           className="grid gap-3 sm:grid-cols-2"
         >
           {options.map(({ mode, label, Icon }) => (
-            <Label key={mode} htmlFor={`delivery-mode-${mode}`} className="cursor-pointer">
-              <Card className={`p-4 ${deliveryMode === mode ? 'ring-2 ring-primary' : ''}`}>
+            <Label key={mode} htmlFor={`delivery-mode-${mode}`} className="block w-full cursor-pointer">
+              <Card
+                className={`w-full px-5 py-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)] ${
+                  deliveryMode === mode
+                    ? 'bg-white ring-2 ring-primary shadow-[var(--shadow-card)]'
+                    : 'bg-white/80 ring-1 ring-primary/20 shadow-[var(--shadow-tile)]'
+                }`}
+              >
                 <div className="flex items-center gap-3">
                   <RadioGroupItem value={mode} id={`delivery-mode-${mode}`} />
-                  <Icon className="h-5 w-5 text-muted-foreground" />
-                  <p className="font-medium">{label}</p>
+                  <Icon className={`h-5 w-5 ${deliveryMode === mode ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <p className="font-semibold text-primary">{label}</p>
                 </div>
               </Card>
             </Label>
