@@ -23,6 +23,7 @@ import { PreciosPorListaPlugin } from './plugins/precios-por-lista/precios-por-l
 import { BusquedaProductosPlugin } from './plugins/busqueda-productos/busqueda-productos.plugin';
 import { FavoritosPlugin } from './plugins/favoritos/favoritos.plugin';
 import { TransferenciaBancariaPlugin } from './plugins/transferencia-bancaria/transferencia-bancaria.plugin';
+import { MercadoPagoPlugin } from './plugins/mercadopago/mercadopago.plugin';
 import { PedidosEnVivoPlugin } from './plugins/pedidos-en-vivo/pedidos-en-vivo.plugin';
 import { BusquedaProductosStrategy } from './plugins/busqueda-productos/busqueda-productos.strategy';
 
@@ -109,6 +110,12 @@ export const config: VendureConfig = {
         FlujoBodegaPlugin,
         FavoritosPlugin,
         TransferenciaBancariaPlugin,
+        MercadoPagoPlugin.init({
+            accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN?.trim() || undefined,
+            webhookSecret: process.env.MERCADOPAGO_WEBHOOK_SECRET?.trim() || undefined,
+            publicUrl: PUBLIC_URL,
+            storefrontUrl: STOREFRONT_URL,
+        }),
         PedidosEnVivoPlugin,
         GraphiqlPlugin.init(),
         AssetServerPlugin.init({
