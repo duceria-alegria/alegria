@@ -38,6 +38,9 @@ x-server-env: &server-env
     CORS_ORIGINS: ${CORS_ORIGINS:-}
     RESEND_API_KEY: ${RESEND_API_KEY:-}
     EMAIL_FROM_ADDRESS: ${EMAIL_FROM_ADDRESS:-}
+    # Mercado Pago: sin MERCADOPAGO_ACCESS_TOKEN el método queda apagado; sin la clave del webhook se rechazan sus avisos.
+    MERCADOPAGO_ACCESS_TOKEN: ${MERCADOPAGO_ACCESS_TOKEN:-}
+    MERCADOPAGO_WEBHOOK_SECRET: ${MERCADOPAGO_WEBHOOK_SECRET:-}
     # Registro de lo que buscan los clientes: sin SEARCH_LOG_SECRET no se registra nada.
     SEARCH_LOG_SECRET: ${SEARCH_LOG_SECRET:-}
     SEARCH_LOG_RETENTION_DAYS: ${SEARCH_LOG_RETENTION_DAYS:-}

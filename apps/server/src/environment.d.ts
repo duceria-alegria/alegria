@@ -16,6 +16,8 @@ declare global {
             EMAIL_FROM_ADDRESS?: string;
             STOREFRONT_URL?: string;
             PUBLIC_URL?: string;
+            MERCADOPAGO_ACCESS_TOKEN?: string;
+            MERCADOPAGO_WEBHOOK_SECRET?: string;
             SEARCH_LOG_SECRET?: string;
             SEARCH_LOG_RETENTION_DAYS?: string;
             DB_HOST: string;
