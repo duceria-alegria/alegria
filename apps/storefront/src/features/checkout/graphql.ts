@@ -106,6 +106,31 @@ export const GetEligiblePaymentMethodsQuery = graphql(`
     }
 `);
 
+export const GetMercadoPagoOptionsQuery = graphql(`
+    query GetMercadoPagoOptions {
+        opcionesPagoMercadoPago {
+            id
+            nombre
+            descripcion
+            montoPedido
+            comision
+            total
+            cobraComision
+        }
+    }
+`);
+
+export const CreateMercadoPagoPaymentMutation = graphql(`
+    mutation CreateMercadoPagoPayment($opcion: String!) {
+        crearPagoMercadoPago(opcion: $opcion) {
+            urlPago
+            montoPedido
+            comision
+            total
+        }
+    }
+`);
+
 export const GetAvailableCountriesQuery = graphql(`
     query GetAvailableCountries {
         availableCountries {

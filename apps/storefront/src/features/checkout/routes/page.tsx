@@ -3,7 +3,8 @@ import {getActiveCurrencyCode} from '@/features/currency/currency-server';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {getTranslations} from 'next-intl/server';
 import {query} from '@/platform/vendure/api';
-import {GetActiveOrderForCheckoutQuery, GetEligiblePaymentMethodsQuery, GetEligibleShippingMethodsQuery} from '@/features/checkout/graphql';
+import {GetActiveOrderForCheckoutQuery, GetEligiblePaymentMethodsQuery, GetEligibleShippingMethodsQuery, GetMercadoPagoOptionsQuery} from '@/features/checkout/graphql';
+import {visiblePaymentMethods} from '@/features/checkout/mercadopago';
 import {GetCustomerAddressesQuery} from '@/features/account/graphql';
 import {redirect} from '@/platform/i18n/navigation';
 import CheckoutFlow from './checkout-flow';
@@ -28,7 +29,7 @@ export default async function CheckoutPage() {
     const customer = await getActiveCustomer();
     const isGuest = !customer;
 
-    const [orderRes, addressesRes, countries, shippingMethodsRes, paymentMethodsRes] =
+    const [orderRes, addressesRes, countries, shippingMethodsRes, paymentMethodsRes, mercadoPagoRes] =
         await Promise.all([
             query(GetActiveOrderForCheckoutQuery, {}, {useAuthToken: true, currencyCode}),
             isGuest
@@ -37,6 +38,8 @@ export default async function CheckoutPage() {
             getAvailableCountriesCached(locale),
             query(GetEligibleShippingMethodsQuery, {}, {useAuthToken: true, currencyCode}),
             query(GetEligiblePaymentMethodsQuery, {}, {useAuthToken: true, currencyCode}),
+            // Si el servidor aún no tiene Mercado Pago (o falla), el checkout sigue sin esa opción.
+            query(GetMercadoPagoOptionsQuery, {}, {useAuthToken: true, currencyCode}).catch(() => null),
         ]);
 
     const activeOrder = orderRes.data.activeOrder;
@@ -51,8 +54,11 @@ export default async function CheckoutPage() {
 
     const addresses = addressesRes.data.activeCustomer?.addresses || [];
     const shippingMethods = shippingMethodsRes.data.eligibleShippingMethods || [];
-    const paymentMethods =
-        paymentMethodsRes.data.eligiblePaymentMethods?.filter((m) => m.isEligible) || [];
+    const mercadoPagoOptions = mercadoPagoRes?.data.opcionesPagoMercadoPago ?? [];
+    const paymentMethods = visiblePaymentMethods(
+        paymentMethodsRes.data.eligiblePaymentMethods?.filter((m) => m.isEligible) || [],
+        mercadoPagoOptions,
+    );
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -63,6 +69,7 @@ export default async function CheckoutPage() {
                 countries={countries}
                 shippingMethods={shippingMethods}
                 paymentMethods={paymentMethods}
+                mercadoPagoOptions={mercadoPagoOptions}
                 isGuest={isGuest}
             >
                 <CheckoutFlow/>

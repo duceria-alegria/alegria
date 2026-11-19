@@ -2,10 +2,12 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PhoneInput } from '@/components/ui/phone-input';
+import { normalizePhone, PHONE_PATTERN } from '@/lib/phone';
 import { Field, FieldLabel, FieldError, FieldGroup } from '@/components/ui/field';
 import { useForm, Controller } from 'react-hook-form';
 import { Loader2 } from 'lucide-react';
-import { CountrySelect } from '@/components/ui/country-select';
+import { CountrySelect, defaultCountryCode } from '@/components/ui/country-select';
 import {useTranslations} from 'next-intl';
 
 interface Country {
@@ -61,9 +63,9 @@ export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitti
       province: address.province || '',
       postalCode: address.postalCode || '',
       countryCode: address.country.code,
-      phoneNumber: address.phoneNumber || '',
+      phoneNumber: normalizePhone(address.phoneNumber || ''),
     } : {
-      countryCode: countries[0]?.code || 'US',
+      countryCode: defaultCountryCode(countries),
     }
   });
 
@@ -155,10 +157,9 @@ export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitti
 
           <Field className="col-span-2">
             <FieldLabel htmlFor="phoneNumber">{t('phoneNumberField')}</FieldLabel>
-            <Input
+            <PhoneInput
               id="phoneNumber"
-              type="tel"
-              {...register('phoneNumber', { required: t('phoneRequired') })}
+              {...register('phoneNumber', { required: t('phoneRequired'), pattern: { value: PHONE_PATTERN, message: t('phoneInvalid') } })}
               disabled={isSubmitting}
             />
             <FieldError>{errors.phoneNumber?.message}</FieldError>

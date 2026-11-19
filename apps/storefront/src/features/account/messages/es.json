@@ -95,6 +95,7 @@
     "postalCodeRequired": "El código postal es obligatorio",
     "countryRequired": "El país es obligatorio",
     "phoneRequired": "El teléfono es obligatorio",
+    "phoneInvalid": "El teléfono debe tener 10 dígitos",
     "verifyEmail": {
       "invalidLink": "Enlace de verificación no válido",
       "invalidLinkDesc": "El enlace de verificación falta o no es válido.",

@@ -1,6 +1,6 @@
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
-import {Check, ShoppingBag, ClipboardList, Landmark} from 'lucide-react';
+import {Check, CircleAlert, CircleX, Clock, ShoppingBag, ClipboardList, Landmark} from 'lucide-react';
 import { Link } from '@/platform/i18n/navigation';
 import Image from 'next/image';
 import { NO_IMAGE_SRC } from '@/lib/no-image';
@@ -9,11 +9,14 @@ import {Price} from '@/features/pricing/price';
 import {notFound} from 'next/navigation';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {getTranslations} from 'next-intl/server';
-import {query} from '@/platform/vendure/api';
+import {mutate, query} from '@/platform/vendure/api';
 import {graphql} from '@/platform/vendure/graphql';
 import {isPickupShippingMethod} from '@/features/checkout/pickup';
+import {MERCADOPAGO_METHOD} from '@/features/checkout/mercadopago';
 import {bankTransferDetails, isPendingBankTransfer} from '../bank-transfer';
 import {LiveOrderUpdates} from '../live-order-updates';
+import {MercadoPagoConfirming, RefreshCartOnPaid} from '../mercadopago-status';
+import {isUnpaidOrder, mercadoPagoCharge, paymentView, type PaymentView} from '../payment-view';
 
 const GetOrderByCodeQuery = graphql(`
     query GetOrderByCode($code: String!) {
@@ -67,6 +70,41 @@ const GetOrderByCodeQuery = graphql(`
     }
 `);
 
+const VerifyMercadoPagoPaymentMutation = graphql(`
+    mutation VerifyMercadoPagoPayment($code: String!) {
+        verificarPagoMercadoPago(codigoPedido: $code) {
+            estado
+        }
+    }
+`);
+
+/**
+ * Estado del cobro con Mercado Pago de un pedido que aún no está pagado. Al regresar de Mercado Pago el aviso
+ * del servidor puede no haber llegado (o no poder llegar, como en desarrollo): esta llamada busca el pago
+ * directo en Mercado Pago y lo registra si ya está aprobado. Si el servidor no responde, se trata como
+ * "sin pago" en lugar de romper la página.
+ */
+async function verifyMercadoPagoPayment(code: string): Promise<string | undefined> {
+    try {
+        const {data} = await mutate(VerifyMercadoPagoPaymentMutation, {code}, {useAuthToken: true});
+        return data.verificarPagoMercadoPago.estado;
+    } catch {
+        return undefined;
+    }
+}
+
+const STATUS_HEADERS: Record<Exclude<PaymentView, 'confirmed'>, {
+    icon: typeof Clock;
+    title: 'mpConfirmingTitle' | 'mpNotPaidTitle' | 'mpRejectedTitle' | 'mpReviewTitle';
+    text: 'mpConfirmingText' | 'mpNotPaidText' | 'mpRejectedText' | 'mpReviewText';
+    tone: string;
+}> = {
+    confirming: {icon: Clock, title: 'mpConfirmingTitle', text: 'mpConfirmingText', tone: 'bg-primary text-primary-foreground shadow-primary/25'},
+    notPaid: {icon: CircleAlert, title: 'mpNotPaidTitle', text: 'mpNotPaidText', tone: 'bg-amber-500 text-white shadow-amber-500/25'},
+    rejected: {icon: CircleX, title: 'mpRejectedTitle', text: 'mpRejectedText', tone: 'bg-destructive text-white shadow-destructive/25'},
+    review: {icon: CircleAlert, title: 'mpReviewTitle', text: 'mpReviewText', tone: 'bg-amber-500 text-white shadow-amber-500/25'},
+};
+
 interface OrderConfirmationProps {
     paramsPromise: Promise<{ locale: string; code: string }>;
 }
@@ -77,11 +115,28 @@ export async function OrderConfirmation({paramsPromise}: OrderConfirmationProps)
     const t = await getTranslations({locale, namespace: 'OrderConfirmation'});
 
     const {data} = await query(GetOrderByCodeQuery, {code}, {useAuthToken: true});
-    const order = data.orderByCode;
+    let order = data.orderByCode;
 
     if (!order) {
         notFound();
     }
+
+    // Pedido sin pagar: el cliente regresó de Mercado Pago (o abrió el enlace) antes de que se registre el pago.
+    let mercadoPagoStatus: string | undefined;
+    if (isUnpaidOrder(order.state)) {
+        mercadoPagoStatus = await verifyMercadoPagoPayment(code);
+        if (mercadoPagoStatus === 'aplicado') {
+            // Se acaba de registrar: se vuelve a leer el pedido para mostrarlo ya pagado.
+            order = (await query(GetOrderByCodeQuery, {code}, {useAuthToken: true})).data.orderByCode ?? order;
+        }
+    }
+    const view = paymentView(order.state, mercadoPagoStatus);
+    const statusHeader = view === 'confirmed' ? undefined : STATUS_HEADERS[view];
+
+    const mercadoPagoPayment = order.payments?.find(
+        (payment) => payment.method === MERCADOPAGO_METHOD && payment.state === 'Settled',
+    );
+    const mercadoPagoFee = mercadoPagoPayment ? mercadoPagoCharge(mercadoPagoPayment.metadata) : undefined;
 
     const pendingTransfer = order.payments?.find(isPendingBankTransfer);
     const transfer = pendingTransfer ? bankTransferDetails(pendingTransfer.metadata) : undefined;
@@ -91,22 +146,47 @@ export async function OrderConfirmation({paramsPromise}: OrderConfirmationProps)
     return (
         <div className="container mx-auto px-4 py-16">
             <LiveOrderUpdates code={order.code}/>
+            {mercadoPagoPayment && <RefreshCartOnPaid/>}
             <div className="max-w-3xl mx-auto">
-                <div className="text-center mb-10">
-                    <div className="flex justify-center mb-6">
-                        <div className="rounded-full bg-primary p-5 shadow-lg shadow-primary/25">
-                            <Check className="h-10 w-10 text-primary-foreground" strokeWidth={3} />
+                {statusHeader ? (
+                    <div className="text-center mb-10 space-y-3">
+                        <div className="flex justify-center mb-6">
+                            <div className={`rounded-full p-5 shadow-lg ${statusHeader.tone}`}>
+                                <statusHeader.icon className="h-10 w-10" strokeWidth={2.5} aria-hidden="true" />
+                            </div>
                         </div>
+                        <h1 className="text-3xl font-bold">{t(statusHeader.title)}</h1>
+                        <p className="text-muted-foreground">
+                            {t('orderNumber')}{' '}
+                            <span className="font-semibold text-foreground">{order.code}</span>
+                        </p>
+                        <p className="mx-auto max-w-prose text-sm text-muted-foreground">{t(statusHeader.text)}</p>
+                        {view === 'confirming' && <MercadoPagoConfirming/>}
+                        {(view === 'notPaid' || view === 'rejected') && (
+                            <div className="pt-2">
+                                <Button nativeButton={false} render={<Link href="/checkout" />} size="lg">
+                                    {t('backToPayment')}
+                                </Button>
+                            </div>
+                        )}
                     </div>
-                    <h1 className="text-3xl font-bold mb-2">{t('orderConfirmed')}</h1>
-                    <p className="text-muted-foreground">
-                        {t('thankYou')}{' '}
-                        <span className="font-semibold text-foreground">{order.code}</span>
-                    </p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                        {t('emailConfirmation')}
-                    </p>
-                </div>
+                ) : (
+                    <div className="text-center mb-10">
+                        <div className="flex justify-center mb-6">
+                            <div className="rounded-full bg-primary p-5 shadow-lg shadow-primary/25">
+                                <Check className="h-10 w-10 text-primary-foreground" strokeWidth={3} />
+                            </div>
+                        </div>
+                        <h1 className="text-3xl font-bold mb-2">{t('orderConfirmed')}</h1>
+                        <p className="text-muted-foreground">
+                            {t('thankYou')}{' '}
+                            <span className="font-semibold text-foreground">{order.code}</span>
+                        </p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                            {t('emailConfirmation')}
+                        </p>
+                    </div>
+                )}
 
                 {pendingTransfer && transfer && (
                     <Card className="mb-6 border-primary">
@@ -179,6 +259,23 @@ export async function OrderConfirmation({paramsPromise}: OrderConfirmationProps)
                                 <Price value={order.totalWithTax} currencyCode={order.currencyCode}/>
                             </span>
                         </div>
+
+                        {mercadoPagoFee && (
+                            <>
+                                <div className="flex justify-between items-baseline text-sm">
+                                    <span className="text-muted-foreground">{t('mpFeeLine')}</span>
+                                    <span>
+                                        <Price value={mercadoPagoFee.fee} currencyCode={order.currencyCode}/>
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-baseline font-bold">
+                                    <span>{t('mpTotalCharged')}</span>
+                                    <span>
+                                        <Price value={mercadoPagoFee.total} currencyCode={order.currencyCode}/>
+                                    </span>
+                                </div>
+                            </>
+                        )}
                     </CardContent>
                 </Card>
 

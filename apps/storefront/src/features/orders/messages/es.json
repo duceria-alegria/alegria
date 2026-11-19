@@ -27,6 +27,20 @@
     "transferTitle": "Realiza tu transferencia",
     "transferIntro": "Tu pedido queda apartado y lo preparamos en cuanto confirmemos tu transferencia. Usa el código del pedido como concepto.",
     "transferAmount": "Monto exacto",
-    "transferReference": "Concepto o referencia"
+    "transferReference": "Concepto o referencia",
+    "orderNumber": "Pedido",
+    "mpConfirmingTitle": "Confirmando tu pago…",
+    "mpConfirmingText": "Estamos esperando la confirmación de Mercado Pago. Esta página se actualiza sola; puedes dejarla abierta.",
+    "mpConfirmingWaiting": "Esperando confirmación…",
+    "mpConfirmingSlow": "Está tardando más de lo normal. Si ya pagaste, no te preocupes: en cuanto Mercado Pago lo confirme verás aquí tu pedido y te enviaremos un correo.",
+    "mpNotPaidTitle": "Tu pago no se ha completado",
+    "mpNotPaidText": "Tu pedido sigue abierto, pero todavía no hay un pago registrado. Puedes volver para terminar de pagar.",
+    "mpRejectedTitle": "Mercado Pago no aprobó el pago",
+    "mpRejectedText": "No se completó el cobro. Puedes intentarlo de nuevo con otra tarjeta o con otra forma de pago.",
+    "mpReviewTitle": "Recibimos tu pago y lo estamos revisando",
+    "mpReviewText": "Hubo un detalle al registrar tu pedido. No hagas otro pago: te contactaremos para confirmarlo.",
+    "backToPayment": "Volver al pago",
+    "mpFeeLine": "Comisión por pago con Mercado Pago",
+    "mpTotalCharged": "Total cobrado"
   }
 }

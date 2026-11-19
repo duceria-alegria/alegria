@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2, MapPin, Truck, CreditCard, Edit, Mail, Store } from 'lucide-react';
 import { useCheckout } from '../checkout-provider';
 import { placeOrder as placeOrderAction } from '../actions';
+import { MERCADOPAGO_METHOD } from '../../mercadopago';
 import { Price } from '@/features/pricing/price';
 import { isPickupShippingMethod } from '../../pickup';
 import {useTranslations} from 'next-intl';
@@ -15,8 +16,11 @@ interface ReviewStepProps {
 
 export default function ReviewStep({ onEditStep }: ReviewStepProps) {
   const t = useTranslations('Checkout');
-  const { order, paymentMethods, selectedPaymentMethodCode, isGuest, deliveryMode } = useCheckout();
+  const { order, paymentMethods, selectedPaymentMethodCode, isGuest, deliveryMode, selectedMercadoPagoOption, paymentFee } = useCheckout();
   const [loading, setLoading] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+
+  const isMercadoPago = selectedPaymentMethodCode === MERCADOPAGO_METHOD;
 
   const selectedPaymentMethod = paymentMethods.find(
     (method) => method.code === selectedPaymentMethodCode
@@ -42,13 +46,18 @@ export default function ReviewStep({ onEditStep }: ReviewStepProps) {
     if (!selectedPaymentMethodCode) return;
 
     setLoading(true);
+    setPaymentError(null);
     try {
-      await placeOrderAction(selectedPaymentMethodCode);
+      await placeOrderAction(
+        selectedPaymentMethodCode,
+        isMercadoPago ? selectedMercadoPagoOption?.id : undefined,
+      );
     } catch (error) {
       if (error instanceof Error && error.message.includes('NEXT_REDIRECT')) {
         throw error;
       }
       console.error('Error placing order:', error);
+      if (isMercadoPago) setPaymentError(t('mercadoPagoError'));
       setLoading(false);
     }
   };
@@ -197,8 +206,25 @@ export default function ReviewStep({ onEditStep }: ReviewStepProps) {
             <div className="text-sm space-y-3">
               <div>
                 <p className="font-medium">{selectedPaymentMethod.name}</p>
-                {selectedPaymentMethod.description && (
-                  <p className="text-muted-foreground mt-1" dangerouslySetInnerHTML={{ __html: selectedPaymentMethod.description }} />
+                {isMercadoPago && selectedMercadoPagoOption ? (
+                  <>
+                    <p className="text-muted-foreground mt-1">{selectedMercadoPagoOption.nombre}</p>
+                    {paymentFee ? (
+                      <p className="text-muted-foreground">
+                        {t('mercadoPagoFee')} <Price value={paymentFee.fee} currencyCode={order.currencyCode} />
+                        {' · '}
+                        <span className="font-medium text-foreground">
+                          {t('mercadoPagoTotalToPay')} <Price value={paymentFee.total} currencyCode={order.currencyCode} />
+                        </span>
+                      </p>
+                    ) : (
+                      <p className="text-muted-foreground">{t('mercadoPagoNoFee')}</p>
+                    )}
+                  </>
+                ) : (
+                  selectedPaymentMethod.description && (
+                    <p className="text-muted-foreground mt-1" dangerouslySetInnerHTML={{ __html: selectedPaymentMethod.description }} />
+                  )
                 )}
               </div>
               <Button
@@ -218,13 +244,19 @@ export default function ReviewStep({ onEditStep }: ReviewStepProps) {
 
       <Button
         onClick={handlePlaceOrder}
-        disabled={loading || !fulfilmentReady || !selectedPaymentMethodCode}
+        disabled={loading || !fulfilmentReady || !selectedPaymentMethodCode || (isMercadoPago && !selectedMercadoPagoOption)}
         size="lg"
         className="w-full"
       >
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {t('placeOrder')}
+        {isMercadoPago ? t('placeOrderMercadoPago') : t('placeOrder')}
       </Button>
+
+      {paymentError && (
+        <p role="alert" className="text-sm text-destructive text-center">
+          {paymentError}
+        </p>
+      )}
 
       {(!fulfilmentReady || !selectedPaymentMethodCode) && (
         <p className="text-sm text-destructive text-center">

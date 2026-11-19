@@ -3,6 +3,7 @@
 import { createContext, useContext, ReactNode, useState } from 'react';
 import { CheckoutOrder } from './types';
 import { isPickupShippingMethod } from '../pickup';
+import { MercadoPagoOption, mercadoPagoFee } from '../mercadopago';
 
 interface CustomerAddress {
   id: string;
@@ -57,6 +58,12 @@ interface CheckoutContextType {
   paymentMethods: PaymentMethod[];
   selectedPaymentMethodCode: string | null;
   setSelectedPaymentMethodCode: (code: string | null) => void;
+  /** Formas de pagar dentro de Mercado Pago (vacío si no se ofrece). */
+  mercadoPagoOptions: MercadoPagoOption[];
+  selectedMercadoPagoOption: MercadoPagoOption | null;
+  setSelectedMercadoPagoOptionId: (id: string) => void;
+  /** Comisión y total a pagar cuando la opción elegida de Mercado Pago lleva comisión; si no, `null`. */
+  paymentFee: {fee: number; total: number} | null;
   isGuest: boolean;
 }
 
@@ -69,6 +76,7 @@ interface CheckoutProviderProps {
   countries: Country[];
   shippingMethods: ShippingMethod[];
   paymentMethods: PaymentMethod[];
+  mercadoPagoOptions: MercadoPagoOption[];
   isGuest: boolean;
 }
 
@@ -79,11 +87,17 @@ export function CheckoutProvider({
   countries,
   shippingMethods,
   paymentMethods,
+  mercadoPagoOptions,
   isGuest,
 }: CheckoutProviderProps) {
   const [selectedPaymentMethodCode, setSelectedPaymentMethodCode] = useState<string | null>(
     paymentMethods.length === 1 ? paymentMethods[0].code : null
   );
+  const [mercadoPagoOptionId, setSelectedMercadoPagoOptionId] = useState<string | null>(null);
+  // Si la elegida ya no existe (el servidor recalculó las opciones) se vuelve a la primera.
+  const selectedMercadoPagoOption =
+    mercadoPagoOptions.find((option) => option.id === mercadoPagoOptionId) ?? mercadoPagoOptions[0] ?? null;
+  const paymentFee = mercadoPagoFee(selectedPaymentMethodCode, selectedMercadoPagoOption);
   const pickupMethods = shippingMethods.filter(isPickupShippingMethod);
   const deliveryMethods = shippingMethods.filter((method) => !isPickupShippingMethod(method));
   const [deliveryMode, setDeliveryMode] = useState<DeliveryMode>(() => {
@@ -107,6 +121,10 @@ export function CheckoutProvider({
         paymentMethods,
         selectedPaymentMethodCode,
         setSelectedPaymentMethodCode,
+        mercadoPagoOptions,
+        selectedMercadoPagoOption,
+        setSelectedMercadoPagoOptionId,
+        paymentFee,
         isGuest,
       }}
     >
