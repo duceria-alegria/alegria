@@ -89,7 +89,8 @@ export class MercadoPagoService {
 
     /** Formas de pago con Mercado Pago para el carrito activo, con la comisión de cada una. */
     async opciones(ctx: RequestContext): Promise<OpcionCobro[]> {
-        if (!this.api) return [];
+        // Sin sesión de carrito (visitante que nunca agregó nada) no hay pedido que cobrar: `getActiveOrder` lanzaría.
+        if (!this.api || !ctx.session) return [];
         const order = await this.activeOrderService.getActiveOrder(ctx, undefined);
         if (!order || order.totalWithTax <= 0) return [];
         const lista = await this.listaPrecios.getLista(ctx);
@@ -116,7 +117,7 @@ export class MercadoPagoService {
         if (!def) {
             throw new UserInputError('Elige una forma de pago válida');
         }
-        const activa = await this.activeOrderService.getActiveOrder(ctx, undefined);
+        const activa = ctx.session ? await this.activeOrderService.getActiveOrder(ctx, undefined) : undefined;
         if (!activa) {
             throw new UserInputError('No hay un pedido activo');
         }

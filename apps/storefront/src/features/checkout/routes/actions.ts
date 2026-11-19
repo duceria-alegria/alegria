@@ -1,10 +1,12 @@
 'use server';
 
 import {mutate} from '@/platform/vendure/api';
-import {SetOrderShippingAddressMutation, SetOrderBillingAddressMutation, SetOrderShippingMethodMutation, UnsetOrderShippingAddressMutation, AddPaymentToOrderMutation, TransitionOrderToStateMutation, SetCustomerForOrderMutation} from '@/features/checkout/graphql';
+import {SetOrderShippingAddressMutation, SetOrderBillingAddressMutation, SetOrderShippingMethodMutation, UnsetOrderShippingAddressMutation, AddPaymentToOrderMutation, TransitionOrderToStateMutation, SetCustomerForOrderMutation, CreateMercadoPagoPaymentMutation} from '@/features/checkout/graphql';
+import {MERCADOPAGO_METHOD} from '@/features/checkout/mercadopago';
 import {CreateCustomerAddressMutation} from '@/features/account/graphql';
 import {revalidatePath, updateTag} from 'next/cache';
 import {redirect} from '@/platform/i18n/navigation';
+import {redirect as redirectExternal} from 'next/navigation';
 import {getLocale} from 'next-intl/server';
 
 interface AddressInput {
@@ -104,6 +106,11 @@ export async function transitionToArrangingPayment() {
 
     if (result.data.transitionOrderToState?.__typename === 'OrderStateTransitionError') {
         const errorResult = result.data.transitionOrderToState;
+        // El pedido ya estaba esperando el pago: pasa cuando el cliente vuelve de Mercado Pago sin pagar (o con el
+        // pago rechazado) y reintenta. Es justo el estado que se necesita, no un error.
+        if (errorResult.fromState === 'ArrangingPayment') {
+            return;
+        }
         throw new Error(
             `Failed to transition order state: ${errorResult.errorCode} - ${errorResult.message}`
         );
@@ -113,9 +120,23 @@ export async function transitionToArrangingPayment() {
     revalidatePath(`/${locale}/checkout`);
 }
 
-export async function placeOrder(paymentMethodCode: string) {
+export async function placeOrder(paymentMethodCode: string, mercadoPagoOption?: string) {
     // First, transition the order to ArrangingPayment state
     await transitionToArrangingPayment();
+
+    if (paymentMethodCode === MERCADOPAGO_METHOD) {
+        if (!mercadoPagoOption) {
+            throw new Error('Choose how to pay with Mercado Pago');
+        }
+        // El pedido NO se cierra aquí: el cliente paga en Mercado Pago y el servidor registra el pago (y pasa
+        // el pedido a "pago confirmado") cuando Mercado Pago lo confirma. Mientras tanto el pedido sigue abierto.
+        const {data} = await mutate(CreateMercadoPagoPaymentMutation, {opcion: mercadoPagoOption}, {useAuthToken: true});
+        const paymentUrl = data.crearPagoMercadoPago.urlPago;
+        if (!paymentUrl.startsWith('https://')) {
+            throw new Error('Mercado Pago returned an unexpected payment URL');
+        }
+        redirectExternal(paymentUrl);
+    }
 
     // Prepare metadata based on payment method
     const metadata: Record<string, unknown> = {};

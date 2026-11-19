@@ -27,6 +27,20 @@
     "transferTitle": "Überweisung durchführen",
     "transferIntro": "Deine Bestellung ist reserviert und wird vorbereitet, sobald wir deine Überweisung bestätigt haben. Gib den Bestellcode als Verwendungszweck an.",
     "transferAmount": "Genauer Betrag",
-    "transferReference": "Verwendungszweck"
+    "transferReference": "Verwendungszweck",
+    "orderNumber": "Bestellung",
+    "mpConfirmingTitle": "Ihre Zahlung wird bestätigt…",
+    "mpConfirmingText": "Wir warten auf die Bestätigung von Mercado Pago. Diese Seite aktualisiert sich selbst; Sie können sie geöffnet lassen.",
+    "mpConfirmingWaiting": "Warten auf Bestätigung…",
+    "mpConfirmingSlow": "Das dauert länger als üblich. Wenn Sie bereits bezahlt haben, keine Sorge: Sobald Mercado Pago es bestätigt, sehen Sie hier Ihre Bestellung und wir senden Ihnen eine E-Mail.",
+    "mpNotPaidTitle": "Ihre Zahlung ist nicht abgeschlossen",
+    "mpNotPaidText": "Ihre Bestellung ist noch offen, aber es ist noch keine Zahlung erfasst. Sie können zurückgehen und die Zahlung abschließen.",
+    "mpRejectedTitle": "Mercado Pago hat die Zahlung nicht genehmigt",
+    "mpRejectedText": "Die Abbuchung wurde nicht abgeschlossen. Sie können es mit einer anderen Karte oder Zahlungsart erneut versuchen.",
+    "mpReviewTitle": "Wir haben Ihre Zahlung erhalten und prüfen sie",
+    "mpReviewText": "Beim Erfassen Ihrer Bestellung ist ein Problem aufgetreten. Bitte zahlen Sie nicht erneut: Wir melden uns zur Bestätigung bei Ihnen.",
+    "backToPayment": "Zurück zur Zahlung",
+    "mpFeeLine": "Mercado-Pago-Zahlungsgebühr",
+    "mpTotalCharged": "Insgesamt abgebucht"
   }
 }

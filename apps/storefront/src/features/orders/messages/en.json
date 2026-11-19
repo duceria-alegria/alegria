@@ -27,6 +27,20 @@
     "transferTitle": "Make your bank transfer",
     "transferIntro": "Your order is reserved and we will prepare it as soon as we confirm your transfer. Use the order code as the payment reference.",
     "transferAmount": "Exact amount",
-    "transferReference": "Payment reference"
+    "transferReference": "Payment reference",
+    "orderNumber": "Order",
+    "mpConfirmingTitle": "Confirming your payment…",
+    "mpConfirmingText": "We are waiting for Mercado Pago to confirm. This page updates by itself; you can leave it open.",
+    "mpConfirmingWaiting": "Waiting for confirmation…",
+    "mpConfirmingSlow": "This is taking longer than usual. If you already paid, don't worry: as soon as Mercado Pago confirms it you will see your order here and we will email you.",
+    "mpNotPaidTitle": "Your payment is not complete",
+    "mpNotPaidText": "Your order is still open, but there is no payment registered yet. You can go back to finish paying.",
+    "mpRejectedTitle": "Mercado Pago did not approve the payment",
+    "mpRejectedText": "The charge was not completed. You can try again with another card or another payment method.",
+    "mpReviewTitle": "We received your payment and are reviewing it",
+    "mpReviewText": "There was an issue registering your order. Please do not pay again: we will contact you to confirm it.",
+    "backToPayment": "Back to payment",
+    "mpFeeLine": "Mercado Pago payment fee",
+    "mpTotalCharged": "Total charged"
   }
 }

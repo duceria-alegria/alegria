@@ -13,6 +13,7 @@ import { Price } from '@/features/pricing/price';
 import {useTranslations} from 'next-intl';
 
 function OrderSummaryContent({ order, t }: { order: ReturnType<typeof useCheckout>['order']; t: ReturnType<typeof useTranslations<'Checkout'>> }) {
+  const { paymentFee } = useCheckout();
   return (
     <div className="space-y-4">
       <div className="space-y-3">
@@ -80,14 +81,23 @@ function OrderSummaryContent({ order, t }: { order: ReturnType<typeof useCheckou
                 : t('toBeCalculated')}
           </span>
         </div>
+
+        {paymentFee && (
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">{t('mercadoPagoFeeLine')}</span>
+            <span>
+              <Price value={paymentFee.fee} currencyCode={order.currencyCode} />
+            </span>
+          </div>
+        )}
       </div>
 
       <Separator />
 
       <div className="flex justify-between font-bold text-lg">
-        <span>{t('total')}</span>
+        <span>{paymentFee ? t('mercadoPagoTotalToPay') : t('total')}</span>
         <span>
-          <Price value={order.totalWithTax} currencyCode={order.currencyCode} />
+          <Price value={paymentFee ? paymentFee.total : order.totalWithTax} currencyCode={order.currencyCode} />
         </span>
       </div>
     </div>
@@ -96,7 +106,7 @@ function OrderSummaryContent({ order, t }: { order: ReturnType<typeof useCheckou
 
 export default function OrderSummary() {
   const t = useTranslations('Checkout');
-  const { order } = useCheckout();
+  const { order, paymentFee } = useCheckout();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -114,7 +124,7 @@ export default function OrderSummary() {
                   </CardTitle>
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-lg">
-                      <Price value={order.totalWithTax} currencyCode={order.currencyCode} />
+                      <Price value={paymentFee ? paymentFee.total : order.totalWithTax} currencyCode={order.currencyCode} />
                     </span>
                     <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
                   </div>
