@@ -51,6 +51,7 @@
     "postalCodeRequired": "Postal code is required",
     "countryRequired": "Country is required",
     "phoneRequired": "Phone number is required",
+    "phoneInvalid": "The phone number must have 10 digits",
     "selectSavedAddress": "Select a saved address",
     "continueWithSelected": "Continue with selected address",
     "addNewAddress": "Add new address",

@@ -51,6 +51,7 @@
     "postalCodeRequired": "Postleitzahl ist erforderlich",
     "countryRequired": "Land ist erforderlich",
     "phoneRequired": "Telefonnummer ist erforderlich",
+    "phoneInvalid": "Die Telefonnummer muss 10 Ziffern haben",
     "selectSavedAddress": "Gespeicherte Adresse auswählen",
     "continueWithSelected": "Mit ausgewählter Adresse fortfahren",
     "addNewAddress": "Neue Adresse hinzufügen",

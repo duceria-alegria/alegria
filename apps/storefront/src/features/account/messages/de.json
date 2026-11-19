@@ -95,6 +95,7 @@
     "postalCodeRequired": "Postleitzahl ist erforderlich",
     "countryRequired": "Land ist erforderlich",
     "phoneRequired": "Telefonnummer ist erforderlich",
+    "phoneInvalid": "Die Telefonnummer muss 10 Ziffern haben",
     "verifyEmail": {
       "invalidLink": "Ungültiger Bestätigungslink",
       "invalidLinkDesc": "Der Bestätigungslink fehlt oder ist ungültig.",

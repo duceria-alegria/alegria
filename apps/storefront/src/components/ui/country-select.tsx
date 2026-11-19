@@ -23,6 +23,19 @@ interface Country {
   name: string;
 }
 
+/** País que se preselecciona al capturar una dirección nueva: la tienda vende en México. */
+export const DEFAULT_COUNTRY_CODE = 'MX';
+
+/**
+ * Código del país inicial de un formulario de dirección: México si la tienda lo ofrece; si no, el primero de
+ * la lista (y MX como último recurso, para no dejar el campo vacío con una lista vacía).
+ */
+export function defaultCountryCode(countries: Country[]): string {
+  return countries.find((country) => country.code === DEFAULT_COUNTRY_CODE)?.code
+    ?? countries[0]?.code
+    ?? DEFAULT_COUNTRY_CODE;
+}
+
 interface CountrySelectProps {
   countries: Country[];
   value?: string;

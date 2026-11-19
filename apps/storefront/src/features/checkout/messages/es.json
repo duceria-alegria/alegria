@@ -51,6 +51,7 @@
     "postalCodeRequired": "El código postal es obligatorio",
     "countryRequired": "El país es obligatorio",
     "phoneRequired": "El teléfono es obligatorio",
+    "phoneInvalid": "El teléfono debe tener 10 dígitos",
     "selectSavedAddress": "Selecciona una dirección guardada",
     "continueWithSelected": "Continuar con la dirección seleccionada",
     "addNewAddress": "Agregar nueva dirección",

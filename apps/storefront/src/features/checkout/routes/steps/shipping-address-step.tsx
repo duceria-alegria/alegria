@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PhoneInput } from '@/components/ui/phone-input';
+import { normalizePhone, PHONE_PATTERN } from '@/lib/phone';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card } from '@/components/ui/card';
@@ -14,7 +16,7 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from '@/platform/i18n/navigation';
 import { useCheckout } from '../checkout-provider';
 import { setShippingAddress, createCustomerAddress } from '../actions';
-import { CountrySelect } from '@/components/ui/country-select';
+import { CountrySelect, defaultCountryCode } from '@/components/ui/country-select';
 import {useTranslations} from 'next-intl';
 
 interface ShippingAddressStepProps {
@@ -67,17 +69,19 @@ export default function ShippingAddressStep({ onComplete }: ShippingAddressStepP
         city: order.shippingAddress.city || '',
         province: order.shippingAddress.province || '',
         postalCode: order.shippingAddress.postalCode || '',
-        countryCode: countries.find(c => c.name === order.shippingAddress?.country)?.code || countries[0]?.code || 'US',
-        phoneNumber: order.shippingAddress.phoneNumber || order.customer?.phoneNumber || '',
+        countryCode: countries.find(c => c.name === order.shippingAddress?.country)?.code || defaultCountryCode(countries),
+        phoneNumber: normalizePhone(order.shippingAddress.phoneNumber || order.customer?.phoneNumber || ''),
         company: order.shippingAddress.company || '',
       };
     }
     return {
       fullName: customerFullName,
-      countryCode: countries[0]?.code || 'US',
-      phoneNumber: order.customer?.phoneNumber || '',
+      countryCode: defaultCountryCode(countries),
+      phoneNumber: normalizePhone(order.customer?.phoneNumber || ''),
     };
   };
+
+  const phoneRule = { value: PHONE_PATTERN, message: t('phoneInvalid') };
 
   const { register, handleSubmit, formState: { errors }, reset, control } = useForm<AddressFormData>({
     defaultValues: getDefaultFormValues()
@@ -222,10 +226,9 @@ export default function ShippingAddressStep({ onComplete }: ShippingAddressStepP
 
               <Field className="col-span-2">
                 <FieldLabel htmlFor="phoneNumber">{t('phoneNumber')}</FieldLabel>
-                <Input
+                <PhoneInput
                   id="phoneNumber"
-                  type="tel"
-                  {...register('phoneNumber', { required: t('phoneRequired') })}
+                  {...register('phoneNumber', { required: t('phoneRequired'), pattern: phoneRule })}
                 />
                 <FieldError>{errors.phoneNumber?.message}</FieldError>
               </Field>
@@ -399,10 +402,9 @@ export default function ShippingAddressStep({ onComplete }: ShippingAddressStepP
 
                       <Field className="col-span-2">
                         <FieldLabel htmlFor="phoneNumber">{t('phoneNumberLabel')}</FieldLabel>
-                        <Input
+                        <PhoneInput
                           id="phoneNumber"
-                          type="tel"
-                          {...register('phoneNumber')}
+                          {...register('phoneNumber', { pattern: phoneRule })}
                         />
                         <FieldError>{errors.phoneNumber?.message}</FieldError>
                       </Field>
@@ -516,10 +518,9 @@ export default function ShippingAddressStep({ onComplete }: ShippingAddressStepP
 
                   <Field className="col-span-2">
                     <FieldLabel htmlFor="phoneNumber">{t('phoneNumberLabel')}</FieldLabel>
-                    <Input
+                    <PhoneInput
                       id="phoneNumber"
-                      type="tel"
-                      {...register('phoneNumber')}
+                      {...register('phoneNumber', { pattern: phoneRule })}
                     />
                     <FieldError>{errors.phoneNumber?.message}</FieldError>
                   </Field>
