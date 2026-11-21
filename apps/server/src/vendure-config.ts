@@ -25,6 +25,7 @@ import { FavoritosPlugin } from './plugins/favoritos/favoritos.plugin';
 import { TransferenciaBancariaPlugin } from './plugins/transferencia-bancaria/transferencia-bancaria.plugin';
 import { MercadoPagoPlugin } from './plugins/mercadopago/mercadopago.plugin';
 import { PedidosEnVivoPlugin } from './plugins/pedidos-en-vivo/pedidos-en-vivo.plugin';
+import { BrandingPlugin } from './plugins/branding/branding.plugin';
 import { BusquedaProductosStrategy } from './plugins/busqueda-productos/busqueda-productos.strategy';
 
 // Las columnas de fecha son `timestamp without time zone` y Postgres guarda en UTC. Si el proceso Node corre
@@ -106,6 +107,7 @@ export const config: VendureConfig = {
     // need to be updated. See the "Migrations" section in README.md.
     customFields: {},
     plugins: [
+        BrandingPlugin,
         PreciosPorListaPlugin,
         FlujoBodegaPlugin,
         FavoritosPlugin,

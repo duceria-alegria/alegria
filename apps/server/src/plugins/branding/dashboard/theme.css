@@ -1,0 +1,252 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;500;600;700;800&display=swap');
+
+/* ==========================================================================
+   Dulcería Alegría - Admin Dashboard Theme
+   Alineado al diseño y paleta de colores del Storefront de la tienda
+   ========================================================================== */
+
+:root {
+    --font-sans: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-heading: 'Baloo 2', 'Nunito', cursive, sans-serif;
+    --font-body: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+    /* Constantes de la marca Dulcería Alegría */
+    --color-brand-purple-deep: #3a1556;
+    --color-brand-purple: #4b1d6e;
+    --color-brand-yellow: #ffe600;
+    --color-brand-yellow-deep: #ffd000;
+    --color-brand-yellow-soft: #fff2b3;
+    --color-brand-pink: #f0338f;
+    --color-brand-cyan: #22c5d9;
+    --color-brand-orange: #f7941d;
+    --color-brand-blue: #1b7fc4;
+    --color-brand-red: #e0141b;
+
+    --color-pastel-pink: #ffe4f1;
+    --color-pastel-orange: #ffe8cc;
+    --color-pastel-lavender: #f1e8fa;
+    --color-pastel-cyan: #d8f5f9;
+    --color-pastel-red: #ffe1e1;
+    --color-pastel-blue: #dceefa;
+
+    --radius: 0.625rem;
+    --radius-lg: 0.625rem;
+    --radius-xl: 0.75rem;
+    --radius-2xl: 1rem;
+}
+
+/* Base & Typography */
+body {
+    font-family: var(--font-body) !important;
+    color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, .font-heading,
+[data-slot="page-title"],
+[data-slot="dialog-title"],
+[data-slot="card-title"] {
+    font-family: var(--font-heading) !important;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+}
+
+/* Storefront ambient candy backdrop in authenticated layout */
+[data-slot="sidebar-inset"] {
+    background-color: #faf7fc;
+    background-image:
+        radial-gradient(ellipse 65% 50% at 95% 4%, color-mix(in oklab, #22c5d9 9%, transparent), transparent),
+        radial-gradient(ellipse 60% 50% at 5% 95%, color-mix(in oklab, #f0338f 7%, transparent), transparent),
+        radial-gradient(ellipse 55% 45% at 95% 90%, color-mix(in oklab, #ffe600 11%, transparent), transparent);
+    background-attachment: fixed;
+}
+
+.dark [data-slot="sidebar-inset"] {
+    background-color: #170b22;
+    background-image:
+        radial-gradient(ellipse 65% 50% at 95% 4%, color-mix(in oklab, #22c5d9 10%, transparent), transparent),
+        radial-gradient(ellipse 60% 50% at 5% 95%, color-mix(in oklab, #f0338f 10%, transparent), transparent);
+    background-attachment: fixed;
+}
+
+/* Header bar */
+[data-slot="header"] {
+    background-color: color-mix(in oklab, var(--background) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+}
+
+/* Sidebar branding & styling */
+[data-slot="sidebar"] {
+    border-right-color: var(--sidebar-border);
+}
+
+[data-slot="sidebar-header"]::before {
+    content: "🍬 Dulcería Alegría";
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--foreground);
+    padding: 0.65rem 0.5rem 0.35rem;
+    letter-spacing: -0.01em;
+}
+
+[data-state="collapsed"] [data-slot="sidebar-header"]::before {
+    content: "🍬";
+    justify-content: center;
+    font-size: 1.25rem;
+    padding: 0.65rem 0;
+}
+
+/* Sidebar nav item active & hover states */
+[data-slot="sidebar-menu-button"] {
+    border-radius: var(--radius-lg);
+    font-family: var(--font-body);
+    font-weight: 500;
+    transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+[data-slot="sidebar-menu-button"]:hover {
+    background-color: var(--sidebar-accent);
+    color: var(--sidebar-accent-foreground);
+}
+
+[data-slot="sidebar-menu-button"][data-active="true"] {
+    background-color: var(--sidebar-accent) !important;
+    color: var(--sidebar-accent-foreground) !important;
+    font-weight: 700;
+    box-shadow: 0 1px 4px rgba(75, 29, 110, 0.08);
+}
+
+/* Channel switcher button in sidebar */
+[data-slot="sidebar-header"] button {
+    border-radius: var(--radius-lg) !important;
+    border-color: var(--border) !important;
+}
+
+/* Cards & Panels */
+[data-slot="card"] {
+    border-radius: var(--radius-xl) !important;
+    border-color: var(--border) !important;
+    box-shadow: 0 4px 14px -3px rgba(75, 29, 110, 0.07), 0 2px 4px -2px rgba(75, 29, 110, 0.04);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+[data-slot="card"]:hover {
+    box-shadow: 0 8px 22px -5px rgba(75, 29, 110, 0.11), 0 3px 6px -3px rgba(75, 29, 110, 0.06);
+}
+
+/* Buttons */
+button[data-variant="default"], .bg-primary {
+    border-radius: var(--radius-lg);
+    font-weight: 700;
+    transition: all 0.15s ease-in-out;
+    box-shadow: 0 2px 6px -1px rgba(75, 29, 110, 0.25);
+}
+
+button[data-variant="default"]:hover, .bg-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px -2px rgba(75, 29, 110, 0.35);
+}
+
+button[data-variant="default"]:active, .bg-primary:active {
+    transform: translateY(0);
+}
+
+button[data-variant="secondary"] {
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+}
+
+/* Form inputs & controls */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+textarea,
+select {
+    border-radius: var(--radius-lg) !important;
+    border-color: var(--input) !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-brand-yellow) 45%, transparent) !important;
+}
+
+/* Data Tables */
+table th, [data-slot="table-header"] {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 700;
+    color: var(--foreground);
+    background-color: var(--muted);
+}
+
+table tr:hover td {
+    background-color: color-mix(in oklab, var(--accent) 35%, transparent);
+}
+
+/* Badges */
+[data-slot="badge"] {
+    border-radius: 9999px !important;
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.65rem;
+}
+
+/* Dev mode badge */
+[data-slot="badge"].bg-dev-mode {
+    background-color: var(--color-brand-yellow) !important;
+    color: var(--color-brand-purple-deep) !important;
+    font-weight: 800;
+    border: 1px solid rgba(75, 29, 110, 0.15);
+}
+
+/* ==========================================================================
+   Login Page Styling (Storefront Look & Feel)
+   ========================================================================== */
+
+.bg-sidebar:has(form),
+div:has(> div > form[class*="items-center"]) {
+    background:
+        radial-gradient(ellipse 70% 55% at 0% 0%, color-mix(in oklab, #f0338f 22%, transparent), transparent),
+        radial-gradient(ellipse 65% 50% at 100% 6%, color-mix(in oklab, #22c5d9 24%, transparent), transparent),
+        radial-gradient(ellipse 60% 50% at 100% 62%, color-mix(in oklab, #f7941d 15%, transparent), transparent),
+        radial-gradient(ellipse 70% 55% at 0% 100%, color-mix(in oklab, #3a1556 12%, transparent), transparent),
+        radial-gradient(ellipse 65% 50% at 100% 100%, color-mix(in oklab, #ffe600 30%, transparent), transparent),
+        #fffbf2 !important;
+}
+
+.dark .bg-sidebar:has(form),
+.dark div:has(> div > form[class*="items-center"]) {
+    background:
+        radial-gradient(ellipse 70% 55% at 0% 0%, color-mix(in oklab, #f0338f 25%, transparent), transparent),
+        radial-gradient(ellipse 65% 50% at 100% 6%, color-mix(in oklab, #22c5d9 20%, transparent), transparent),
+        radial-gradient(ellipse 70% 55% at 0% 100%, color-mix(in oklab, #3a1556 30%, transparent), transparent),
+        radial-gradient(ellipse 65% 50% at 100% 100%, color-mix(in oklab, #ffd000 15%, transparent), transparent),
+        #150a1e !important;
+}
+
+/* Login Card container */
+div:has(> div > form) [data-slot="card"] {
+    border-radius: 1.25rem !important;
+    border: 1.5px solid var(--border) !important;
+    box-shadow: 0 20px 30px -10px rgba(75, 29, 110, 0.22), 0 8px 12px -6px rgba(75, 29, 110, 0.12) !important;
+    backdrop-filter: blur(12px);
+    background-color: rgba(255, 255, 255, 0.96) !important;
+}
+
+.dark div:has(> div > form) [data-slot="card"] {
+    background-color: rgba(36, 20, 52, 0.96) !important;
+    box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.5) !important;
+}
