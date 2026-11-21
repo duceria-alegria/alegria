@@ -67,7 +67,7 @@ export function ProductCard({product: productProp, preload, className}: ProductC
                 )}
                 <FavoriteButton productId={product.productId} productName={product.productName}/>
             </div>
-            <div className="flex flex-col gap-1 px-1 pb-0.5 pt-2.5">
+            <div className="flex flex-1 flex-col gap-1 px-1 pb-0.5 pt-2.5">
                 <h3 className="line-clamp-2 font-display text-[15px] font-bold leading-tight">
                     {/* Stretched link: the pseudo-element makes the whole card the click target. */}
                     <Link
@@ -77,7 +77,8 @@ export function ProductCard({product: productProp, preload, className}: ProductC
                         {product.productName}
                     </Link>
                 </h3>
-                <div className="mt-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-2">
+                {/* mt-auto ancla precio y botón al fondo: quedan alineados aunque el nombre ocupe 1 o 2 líneas. */}
+                <div className="mt-auto flex flex-wrap items-center justify-between gap-x-2 gap-y-2 pt-2">
                     <Suspense fallback={<div className="h-7 w-20 rounded bg-muted"></div>}>
                         <p className="font-display text-lg font-extrabold">
                             {product.priceWithTax.__typename === 'PriceRange' ? (
