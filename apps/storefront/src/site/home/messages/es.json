@@ -5,7 +5,6 @@
     "titleHighlight": "alegría",
     "subtitle": "Gomitas, paletas, chocolates y caramelos para compartir, regalar o consentirte un poquito.",
     "shopNow": "Ver la tienda",
-    "buildBox": "Armar mi caja",
     "imageAlt": "Logotipo de Dulcería Alegría: una mascota amarilla con los pulgares arriba"
   },
   "Home": {
@@ -18,11 +17,6 @@
     "favorites": {
       "title": "Los favoritos",
       "viewAll": "Ver todos los dulces"
-    },
-    "buildBox": {
-      "title": "Arma tu caja de dulces",
-      "description": "Elige tus favoritos, nosotros los acomodamos y la dejamos lista para regalar.",
-      "cta": "Empezar"
     }
   }
 }

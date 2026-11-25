@@ -46,7 +46,6 @@ export function MainNavView({current}: {current?: NavKey}) {
                     {t('shop')}
                 </Link>
                 <Link href="/#categorias" className={cn(linkClass, idleClass)}>{t('categories')}</Link>
-                <Link href="/#caja" className={cn(linkClass, idleClass)}>{t('buildBox')}</Link>
                 <a href="#contacto" className={cn(linkClass, idleClass)}>{t('contact')}</a>
             </div>
         </nav>
