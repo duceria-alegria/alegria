@@ -5,6 +5,7 @@ import { CAMPO_PIEZAS_POR_CAJA, CAMPO_PIEZAS_POR_PAQUETE, CAMPO_PRECIO_VARIANTE,
 import { ListaPreciosService } from './lista-precios.service';
 import { ListaPreciosStrategy } from './lista-precios.strategy';
 import { ProductoCajasResolver } from './producto-cajas.resolver';
+import { RepreciarCarritoService } from './repreciar-carrito.service';
 import { SearchResultPriceResolver } from './search-result-price.resolver';
 
 const es = (value: string) => [{ languageCode: LanguageCode.es, value }];
@@ -18,10 +19,13 @@ const es = (value: string) => [{ languageCode: LanguageCode.es, value }];
  * Cajas: un producto se puede vender por Pieza y por Caja como dos variantes (cada una con su
  * precio por lista y su propio inventario). La variante con `piezasPorCaja` es la caja y solo la
  * ven y compran los clientes de mayoreo.
+ *
+ * Al iniciar sesión se recalcula el carrito con la lista del cliente (`RepreciarCarritoService`): las líneas
+ * agregadas sin sesión se guardaron a precio de menudeo.
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
-    providers: [ListaPreciosService, CajasService],
+    providers: [ListaPreciosService, CajasService, RepreciarCarritoService],
     // El buscador (plugin busqueda-productos) filtra por precio según la lista y las cajas visibles.
     exports: [ListaPreciosService, CajasService],
     shopApiExtensions: { resolvers: [SearchResultPriceResolver, ProductoCajasResolver] },
