@@ -3,6 +3,7 @@ import {
     DefaultJobQueuePlugin,
     DefaultSchedulerPlugin,
     DefaultSearchPlugin,
+    LanguageCode,
     VendureConfig,
 } from '@vendure/core';
 import {
@@ -55,6 +56,7 @@ const STOREFRONT_URL =
 const PUBLIC_URL = process.env.PUBLIC_URL?.trim().replace(/\/$/, '');
 
 export const config: VendureConfig = {
+    defaultLanguageCode: LanguageCode.es,
     apiOptions: {
         port: serverPort,
         adminApiPath: 'admin-api',
