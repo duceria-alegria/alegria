@@ -1,4 +1,4 @@
-import { defineDashboardExtension } from '@vendure/dashboard';
+import { defineDashboardExtension, useUserSettings } from '@vendure/dashboard';
 import React, { useEffect } from 'react';
 import logoSvgUrl from './assets/logo.svg';
 import mascotSvgUrl from './assets/mascot-cutout.svg';
@@ -67,8 +67,20 @@ function StorefrontToolbarButton() {
     );
 }
 
-// Proveedor global para actualizar favicon y título de página
+// Proveedor global para actualizar favicon, título y sincronizar español por defecto
 function AlegriaBrandingProvider({ children }: { children: React.ReactNode }) {
+    const { settings, setContentLanguage, setDisplayLanguage } = useUserSettings();
+
+    // Sincronizar automáticamente el idioma de contenido y de interfaz a español si están en otro valor
+    useEffect(() => {
+        if (settings.contentLanguage && settings.contentLanguage !== 'es') {
+            setContentLanguage('es');
+        }
+        if (settings.displayLanguage && settings.displayLanguage !== 'es') {
+            setDisplayLanguage('es');
+        }
+    }, [settings.contentLanguage, settings.displayLanguage, setContentLanguage, setDisplayLanguage]);
+
     useEffect(() => {
         // Actualizar favicon con el ícono de la marca
         let favicon = document.querySelector<HTMLLinkElement>("link[rel*='icon']");
@@ -94,7 +106,9 @@ function AlegriaBrandingProvider({ children }: { children: React.ReactNode }) {
         observer.observe(titleEl, { subtree: true, characterData: true, childList: true });
         updateTitle();
 
-        return () => observer.disconnect();
+        return () => {
+            observer.disconnect();
+        };
     }, []);
 
     return <>{children}</>;
