@@ -34,14 +34,6 @@ export async function HeroSection() {
                             {t('shopNow')}
                             <ArrowRight className="size-[18px]" strokeWidth={2.4} aria-hidden="true" />
                         </Button>
-                        <Button
-                            render={<Link href="/#caja" />}
-                            nativeButton={false}
-                            variant="outline"
-                            className="h-[52px] rounded-full border-2 border-primary px-[26px] text-base font-extrabold hover:bg-accent"
-                        >
-                            {t('buildBox')}
-                        </Button>
                     </div>
                 </div>
                 <div className="mx-auto min-w-0 max-w-[560px] flex-[1_1_340px] pt-4 sm:pt-2">

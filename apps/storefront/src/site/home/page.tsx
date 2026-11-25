@@ -3,7 +3,6 @@ import {getRouteLocale} from "@/platform/i18n/server";
 import {HeroSection} from "@/site/home/hero-section";
 import {CategoriesSection} from "@/site/home/categories-section";
 import {FavoritesSection} from "@/site/home/favorites-section";
-import {BoxCtaSection} from "@/site/home/box-cta-section";
 import {SITE_NAME, SITE_URL, buildCanonicalUrl} from "@/config/metadata";
 import {getTranslations} from 'next-intl/server';
 import {toOgLocale} from '@/platform/i18n/locale-utils';
@@ -37,7 +36,6 @@ export default function Home() {
             <HeroSection/>
             <CategoriesSection/>
             <FavoritesSection/>
-            <BoxCtaSection/>
         </main>
     );
 }

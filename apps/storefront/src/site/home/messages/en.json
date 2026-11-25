@@ -5,7 +5,6 @@
     "titleHighlight": "joy",
     "subtitle": "Gummies, lollipops, chocolates and candies to share, gift or treat yourself a little.",
     "shopNow": "Shop now",
-    "buildBox": "Build my box",
     "imageAlt": "Dulcería Alegría logo: a yellow mascot giving a thumbs up"
   },
   "Home": {
@@ -18,11 +17,6 @@
     "favorites": {
       "title": "The favorites",
       "viewAll": "View all candies"
-    },
-    "buildBox": {
-      "title": "Build your candy box",
-      "description": "Pick your favorites, we arrange them and leave the box ready to gift.",
-      "cta": "Get started"
     }
   }
 }
