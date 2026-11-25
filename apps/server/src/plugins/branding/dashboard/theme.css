@@ -82,23 +82,28 @@ h1, h2, h3, h4, .font-heading,
 }
 
 [data-slot="sidebar-header"]::before {
-    content: "🍬 Dulcería Alegría";
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: var(--font-heading);
-    font-size: 1.15rem;
-    font-weight: 800;
-    color: var(--foreground);
-    padding: 0.65rem 0.5rem 0.35rem;
-    letter-spacing: -0.01em;
+    content: "";
+    display: block;
+    width: 100%;
+    height: 4.25rem;
+    background-image: url('./assets/logo.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    margin: 0.5rem auto 0.35rem;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.12));
+}
+
+.dark [data-slot="sidebar-header"]::before {
+    filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.5)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
 }
 
 [data-state="collapsed"] [data-slot="sidebar-header"]::before {
-    content: "🍬";
-    justify-content: center;
-    font-size: 1.25rem;
-    padding: 0.65rem 0;
+    height: 2.25rem;
+    background-image: url('./assets/mascot-cutout.svg');
+    background-position: center;
+    margin: 0.4rem auto;
 }
 
 /* Sidebar nav item active & hover states */
